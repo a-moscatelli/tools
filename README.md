@@ -1,3 +1,3 @@
 # unix4win
 
-unix tools that I run in windows with no dependencies 
+unix tools that runs on Windows - no lib dependencies required 
