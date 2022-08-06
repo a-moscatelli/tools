@@ -9,5 +9,5 @@ Windows-executable unix tools
 
 examples
 * cksum.exe *
-* curl 
+* curl --ssl-no-revoke https://download.geonames.org/export/dump/cities15000.zip -o cities15000.zip 
 
