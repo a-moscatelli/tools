@@ -1,6 +1,7 @@
 # unix4win
 
-Windows-executable unix tools
+Port of GNU utilities to Windows
+
 * dependent on the ‘msvcrt.dll’ file in the Windows Operating System
 * taken from https://sourceforge.net/projects/unxutils/
 * alternatives:
