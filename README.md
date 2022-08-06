@@ -16,7 +16,7 @@ examples
 * find
   * find.exe \dev -name "*.groovy" -mtime -31
 * gawk
-  * echo|gawk.exe -v e=L "END{for(i=1;i<=10;i++)print e i}" | gawk "BEGIN{px=0} px==0 && /^L3$/ {px=1} px==1 {print} px==1 && /^L7$/ {px=0}"
+  * echo|gawk.exe -v e=L "END{for(i=1;i<=10;i++)print e i}" | gawk.exe -f awk1.awk
   * expected output: L3 L4 L5 L6 L7
 
 
