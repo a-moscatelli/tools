@@ -10,4 +10,5 @@ Windows-executable unix tools
 examples
 * cksum.exe *
 * curl --ssl-no-revoke https://download.geonames.org/export/dump/cities15000.zip -o cities15000.zip 
+* find.exe \dev -name "*.groovy" -mtime -31
 
