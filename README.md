@@ -9,7 +9,13 @@ Port of GNU utilities to Windows
   * https://en.wikipedia.org/wiki/GnuWin32
 
 examples
-* cksum.exe *
-* curl --ssl-no-revoke https://download.geonames.org/export/dump/cities15000.zip -o cities15000.zip 
-* find.exe \dev -name "*.groovy" -mtime -31
+* cksum
+  * cksum.exe *
+* curl
+  * curl --ssl-no-revoke https://download.geonames.org/export/dump/cities15000.zip -o cities15000.zip 
+* find
+  * find.exe \dev -name "*.groovy" -mtime -31
+* gawk
+  * echo|gawk.exe "END{for(i=1;i<=10;i++){print i}}" | gawk "BEGIN{pr=0} pr==0 && /^3$/ {pr=1} pr==1 {print} pr==1 && /^7$/ {pr=0}  END{print \"done\"}"
+
 
