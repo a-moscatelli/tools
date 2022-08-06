@@ -1,6 +1,6 @@
 # unix4win
 
-unix tools that runs on Windows
-* no lib dependencies required
+Windows-executable unix tools
+* dependent on the ‘msvcrt.dll’ file in the Windows Operating System
 * taken from https://sourceforge.net/projects/unxutils/
 
