@@ -22,5 +22,6 @@ examples
 * make
   * make
   * make clean
+  * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
 
 
