@@ -19,5 +19,8 @@ examples
   * echo|gawk.exe -v e=L "END{for(i=1;i<=10;i++)print e i}" | gawk.exe -f awk1.awk
   * using https://github.com/a-moscatelli/unix4win/blob/main/awk1.awk
   * expected output: L3 L4 L5 L6 L7
+* make
+  * make
+  * make clean
 
 
