@@ -1,6 +1,5 @@
 # Tools
-
-Port of GNU utilities to Windows
+### Port of GNU utilities to Windows
 
 * dependent on the ‘msvcrt.dll’ file in the Windows Operating System
 * taken from https://sourceforge.net/projects/unxutils/
@@ -23,8 +22,6 @@ examples
   * make
   * make clean
   * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
-
-
-Standalone jar files
+### Standalone jar files
 * jreepad = a two-pane outliner
 * winstone = a servlet container / web server with jsp support
