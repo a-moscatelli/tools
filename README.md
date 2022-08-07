@@ -22,3 +22,6 @@
 ### Standalone jar files
 * jreepad = a two-pane outliner
 * winstone = a servlet container / web server with jsp support
+  * https://github.com/a-moscatelli/tools/blob/main/Winstone_ServletContainer_GUIDE.html
+  * https://github.com/a-moscatelli/tools/blob/main/start_winstone.bat
+
