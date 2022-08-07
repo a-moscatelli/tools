@@ -1,4 +1,4 @@
-# unix4win
+# microtools
 
 Port of GNU utilities to Windows
 
@@ -25,3 +25,6 @@ examples
   * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
 
 
+Standalone jar files
+* jreepad = a two-pane outliner
+* winstone = a servlet container / web server with jsp support
