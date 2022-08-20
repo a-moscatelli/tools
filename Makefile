@@ -1,12 +1,17 @@
-all: awk1.out.txt awk2.out.txt
+all: \
+awk2.out.txt
+
+AWK=gawk.exe
+AWKPROGRAM=awk1.awk
+
 
 awk1.out.txt:
 	@echo step: prepare file
-	type | gawk.exe -v e=L "END{for(i=1;i<=10;i++)print e i}" > awk1.out.txt
+	$(AWK) -v e=L "BEGIN { for(i=1;i<=10;i++) print e i; exit 0}" > $@
 
-awk2.out.txt:
+awk2.out.txt: awk1.out.txt
 	@echo step: parse file
-	gawk.exe -f awk1.awk awk1.out.txt > awk2.out.txt
+	$(AWK) -f $(AWKPROGRAM) $< > $@
 
 clean:
 	@echo step: clean file
@@ -16,3 +21,6 @@ clean:
 	del /q awk2.out.txt
 
 
+
+# also available:
+# $(wildcard *)
