@@ -32,3 +32,6 @@
 * yEd (great for autolayout) https://www.yworks.com/products/yed/download
 * jreepad (two-pane outliner)
 * zim - https://zim-wiki.org/
+* wikidpad - http://wikidpad.sourceforge.net/
+
+
