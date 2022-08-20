@@ -29,4 +29,6 @@
 
 # Modelling
 * UML https://www.umlet.com/download/umlet_15_0/umlet-standalone-15.0.0.zip
-* yEd https://www.yworks.com/products/yed/download
+* yEd (great for autolayout) https://www.yworks.com/products/yed/download
+* jreepad (two-pane outliner)
+* zim - https://zim-wiki.org/
