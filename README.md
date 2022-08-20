@@ -25,6 +25,7 @@
   * https://github.com/a-moscatelli/tools/blob/main/Winstone_ServletContainer_GUIDE.html
   * https://github.com/a-moscatelli/tools/blob/main/start_winstone.bat
 * M4
+  * m4.exe -E -I . test.m4.txt
   * https://www.gnu.org/software/m4/manual/index.html
 
 # Modelling
