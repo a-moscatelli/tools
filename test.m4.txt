@@ -1,0 +1,42 @@
+
+dnl this is a comment
+
+changequote(`{{',`}}')
+
+changecom
+dnl ... now m4 comments are disabled
+
+undefine({{format}})
+
+
+define(M4_MACRO1,{{
+echo "$1"
+echo "$2"
+}})
+
+ 
+
+M4_MACRO1(a1,a2)
+
+ifelse({{
+
+include(README.md)
+
+}})
+dnl ... will include README.md - but inside an "if false then..." - so with no effect
+
+
+ifelse({{
+block comment
+block comment
+block comment
+}})
+
+ 
+ifelse(one,two,echo bye,{{
+echo error
+}})
+
+ifelse(one,one,echo bye,{{
+echo error
+}})
