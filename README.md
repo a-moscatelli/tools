@@ -19,14 +19,18 @@
   * make
   * make clean
   * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
+* M4
+  * m4.exe -E -I . test.m4.txt
+  * https://www.gnu.org/software/m4/manual/m4.html
+
 ### Standalone jar files
 * jreepad = a two-pane outliner
 * winstone = a servlet container / web server with jsp support
   * https://github.com/a-moscatelli/tools/blob/main/Winstone_ServletContainer_GUIDE.html
   * https://github.com/a-moscatelli/tools/blob/main/start_winstone.bat
-* M4
-  * m4.exe -E -I . test.m4.txt
-  * https://www.gnu.org/software/m4/manual/m4.html
+* h2
+  * https://h2database.com/html/main.html
+  * https://mvnrepository.com/artifact/com.h2database/h2/2.1.210
 
 # Modelling
 * UML https://www.umlet.com/download/umlet_15_0/umlet-standalone-15.0.0.zip
