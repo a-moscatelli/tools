@@ -28,7 +28,7 @@
 * winstone = a servlet container / web server with jsp support
   * https://github.com/a-moscatelli/tools/blob/main/Winstone_ServletContainer_GUIDE.html
   * https://github.com/a-moscatelli/tools/blob/main/start_winstone.bat
-* h2
+* h2 = SQL DB
   * https://h2database.com/html/main.html
   * https://mvnrepository.com/artifact/com.h2database/h2/2.1.210
 
