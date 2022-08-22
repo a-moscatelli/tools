@@ -19,7 +19,7 @@
   * make
   * make clean
   * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
-* M4
+* m4
   * m4.exe -E -I . test.m4.txt
   * https://www.gnu.org/software/m4/manual/m4.html
 
