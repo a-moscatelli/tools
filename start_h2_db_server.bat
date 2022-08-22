@@ -5,7 +5,9 @@ SET JAVA_HOME=%JAVA_HOME%
 
 echo starting H2SERVER
 
-SET H2JAR=groovy-2.5.6\lib\h2-1.4.200.jar
+SET H2JAR=groovy-2.5.6\lib\h2-2.1.214.jar
+rem taken from https://mvnrepository.com/artifact/com.h2database/h2/2.1.214
+
 set H2PORT=9092
 rem (default: 9092)
 
