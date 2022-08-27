@@ -1,0 +1,60 @@
+
+# for instructions: just run: make
+
+# goal:
+# to process all the part.*.step1.txt files into part.*.step2.txt files				(MAP)
+# then to merge all the part.*.step2.txt files into a part.union.3.txt file			(REDUCE)
+# GNU make has functions that support suffix replacement
+# the expected output of this test is a file with 3 records ""
+
+# https://stackoverflow.com/questions/14028268/proper-method-for-wildcard-targets-in-gnu-make
+# https://www.gnu.org/software/make/manual/html_node/Wildcard-Function.html#Wildcard-Function
+# https://www.gnu.org/software/make/manual/html_node/Substitution-Refs.html#Substitution-Refs
+# https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
+
+
+STEP1FILES = $(wildcard part.*.step1.txt)
+STEP2FILES = $(STEP1FILES:1.txt=2.txt)
+TARGET = part.union.3.txt
+#... list replacement
+
+
+help:
+# keep this at the top i.e. as your first rule - it will be executed if you run make without args
+# do not indent these comments!
+	@echo instructions:
+	@echo run:
+	@echo make clean
+	@echo make prepare
+	@echo make build
+	@echo $(STEP1FILES)
+	@echo $(STEP2FILES)
+	
+
+all: $(TARGET)
+
+$(TARGET) : $(STEP2FILES)
+	@echo (REDUCE) processing $^ into $@ ...
+	type  $^  >  $@
+	@echo result ====== BEGIN
+	type $@
+	@echo result ====== END
+
+part.%.step2.txt: part.%.step1.txt
+	@echo (MAP) processing $< into $@ ...
+	type  $<  |  gawk -v S=2 "{gsub(/STEP1/,\"STEP\" S); print}"  >  $@
+
+clean:
+	dir /B *
+	@del /F /Q part*
+	@echo all 'part...' files deleted
+	dir /B *
+
+prepare: prepare_input_files
+
+prepare_input_files:
+	@echo "STEP1 (A)" > part.a.step1.txt
+	@echo "STEP1 (B)" > part.b.step1.txt
+	@echo "STEP1 (C)" > part.c.step1.txt
+	@echo prepare_input_files is done.
+	dir /B part*

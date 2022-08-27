@@ -41,4 +41,6 @@
 * zim - https://zim-wiki.org/
 * wikidpad - http://wikidpad.sourceforge.net/
 
+# Other tools
+* for sqlite: https://portableapps.com/apps/development/database_browser_portable
 
