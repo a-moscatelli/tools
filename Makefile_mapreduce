@@ -1,5 +1,5 @@
 
-# for instructions: just run: make
+# for instructions: just run: Makefile_mapreduce
 
 # goal:
 # to process all the part.*.step1.txt files into part.*.step2.txt files				(MAP)

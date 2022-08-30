@@ -1,8 +1,13 @@
+
+# run: make -f Makefile_twostepmake clean
+# run: make -f Makefile_twostepmake
+
+
 all: \
 awk2.out.txt
 
 AWK=gawk.exe
-AWKPROGRAM=awk1.awk
+AWKPROGRAM=awk1_twostepmake.awk
 
 
 awk1.out.txt:
