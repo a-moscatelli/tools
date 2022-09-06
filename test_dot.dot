@@ -1,0 +1,9 @@
+digraph MG {
+    www_mg_com -> AUTH_login
+    www_mg_com -> PUB_contact [label=FL]
+    www_mg_com -> STATIC_TOS_HTML [label=FL]
+    www_mg_com [shape=box]
+
+    notes [shape=box,style=filled,color=black,fontcolor=white,label="date=03MAY19\l\lFL=follows link"]
+
+}

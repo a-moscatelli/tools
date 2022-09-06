@@ -43,4 +43,5 @@
 
 # Other tools
 * for sqlite: https://portableapps.com/apps/development/database_browser_portable
+* for dot win32: https://gitlab.com/graphviz/graphviz/-/package_files/50095713/download
 
