@@ -40,6 +40,16 @@
 * jreepad (two-pane outliner)
 * zim - https://zim-wiki.org/
 * wikidpad - http://wikidpad.sourceforge.net/
+* https://en.wikipedia.org/wiki/Data-flow_diagram
+  * When using UML, the activity diagram typically takes over the role of the data-flow diagram
+  * https://www.lucidchart.com/pages/data-flow-diagram
+    * https://www.lucidchart.com/pages/data-flow-diagram
+* https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Crow's_foot_notation
+* https://www.uml-diagrams.org/collaboration-diagrams/collaboration.html
+* https://en.wikipedia.org/wiki/Communication_diagram
+* https://www.javatpoint.com/uml-state-machine-diagram
+
+  
 
 # Other tools
 * for sqlite: https://portableapps.com/apps/development/database_browser_portable
