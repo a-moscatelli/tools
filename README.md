@@ -55,3 +55,14 @@
 * for sqlite: https://portableapps.com/apps/development/database_browser_portable
 * for dot win32: https://gitlab.com/graphviz/graphviz/-/package_files/50095713/download
 
+# databases
+* https://bikas-katwal.medium.com/mongodb-vs-cassandra-vs-rdbms-where-do-they-stand-in-the-cap-theorem-1bae779a7a15
+* https://phoenixnap.com/kb/nosql-data-modeling
+* https://www.bmc.com/blogs/cap-theorem/
+* https://betterprogramming.pub/introduction-to-nosql-databases-7f6ed6e055c5
+* https://www.freecodecamp.org/news/nosql-databases-5f6639ed9574/
+* https://db-engines.com/en/system/Aerospike%3BHBase%3BOracle+NoSQL
+* https://www.infoq.com/news/2013/04/NoSQL-Benchmark/
+
+# systems
+* https://github.com/karanpratapsingh/system-design
