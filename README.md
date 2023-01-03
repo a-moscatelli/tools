@@ -54,6 +54,8 @@
 # Other tools
 * for sqlite: https://portableapps.com/apps/development/database_browser_portable
 * for dot win32: https://gitlab.com/graphviz/graphviz/-/package_files/50095713/download
+* https://www.graphviz.org/pdf/dotguide.pdf
+ 
 
 # databases
 * https://bikas-katwal.medium.com/mongodb-vs-cassandra-vs-rdbms-where-do-they-stand-in-the-cap-theorem-1bae779a7a15

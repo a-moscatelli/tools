@@ -1,4 +1,9 @@
-name: Chris
-value: 10000
-taxed_value: 6000
-in_ca: true
+person:
+-   name: Chris
+    value: 10000
+    taxed_value: 6000
+    in_ca: true
+-   name: Annie
+    value: 20000
+    taxed_value: 9000
+    in_ca: false
