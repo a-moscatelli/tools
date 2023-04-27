@@ -34,16 +34,12 @@
   * https://h2database.com/html/main.html
   * https://mvnrepository.com/artifact/com.h2database/h2/2.1.210
 
-# Modelling
+# Modelling tools
 * UML https://www.umlet.com/download/umlet_15_0/umlet-standalone-15.0.0.zip
 * yEd (great for autolayout) https://www.yworks.com/products/yed/download
 * jreepad (two-pane outliner)
 * zim - https://zim-wiki.org/
 * wikidpad - http://wikidpad.sourceforge.net/
-* https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Crow's_foot_notation
-* https://www.uml-diagrams.org/collaboration-diagrams/collaboration.html
-* https://en.wikipedia.org/wiki/Communication_diagram
-* https://www.javatpoint.com/uml-state-machine-diagram
 
   
 
