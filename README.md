@@ -66,5 +66,4 @@
 * https://db-engines.com/en/system/Aerospike%3BHBase%3BOracle+NoSQL
 * https://www.infoq.com/news/2013/04/NoSQL-Benchmark/
 
-# systems
-* https://github.com/karanpratapsingh/system-design
+
