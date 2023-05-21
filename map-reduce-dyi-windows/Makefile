@@ -5,6 +5,9 @@
 # make -j 3 all  # or whatever degree of parallelism is needed.
 # make clean
 
+
+############  ENVIRONMENT SPECIFIC VALUES	- BEGIN
+
 # working workstation and head node:
 HEADH=NODE054
 # remote workers: we assume one job per file per worker
@@ -19,6 +22,17 @@ FILE004=BIGFILE_EOD2022_03_24.csv
 FILE005=BIGFILE_EOD2022_03_24.csv
 # output file of the reduce step:
 FINALFILE=merged.out.csv
+#
+MASTER_WORKDIR=MASTER\WORKDIR
+WORKER_WORKDIR=WORKER\WORKDIR
+MASTER_NET_ABS_TEMPBAT_LOC=\\$(HEADH)\$(MASTER_WORKDIR)
+PYCALL_AT_WORKER=c:\Python37-32\python.exe \\$(HEADH)\$(MASTER_WORKDIR)\task.py
+WAIT5SEC=C:\Windows\System32\timeout.exe /T 5
+WAIT5SEC=C:\Windows\System32\ping.exe 127.0.0.1 -n 5
+PSEXEC=PsExec.exe
+
+############  ENVIRONMENT SPECIFIC VALUES	- END
+
 
 help:
     @echo ''
@@ -51,9 +65,9 @@ map_reduce: $(FINALFILE)
     echo map_reduce is up-to-date!
 
 util_test_rexec:
-    @cmd /c 'PsExec \\$(HOST001) -accepteula -s cmd /c cd'
-    @cmd /c 'PsExec \\$(HOST002) -accepteula -s cmd /c cd'
-    @cmd /c 'PsExec \\$(HOST003) -accepteula -s cmd /c cd'
+    @cmd /c '$(PSEXEC)  \\$(HOST001) -accepteula -s cmd /c cd'
+    @cmd /c '$(PSEXEC)  \\$(HOST002) -accepteula -s cmd /c cd'
+    @cmd /c '$(PSEXEC)  \\$(HOST003) -accepteula -s cmd /c cd'
 
 
 pre_assign_agents_to_files:
@@ -84,6 +98,7 @@ clean_agents_to_files_assignments:
 
 
 #push steps:
+
 FILE001.s1.pushedToWorker.mkcontrol : $(FILE001)
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c 'copy $? \\$(shell cmd /c type FILE001.agent)\$(WORKER_WORKDIR)\ && echo> $@'
@@ -107,56 +122,77 @@ FILE005.s1.pushedToWorker.mkcontrol : $(FILE005)
 # semantic of files:
 # FILE001.lock = the FILE001 step was able to acquire a lock and move its agent status from idle to busy in MUTEX zone
 
+%.s2.enqueuedToWorker.mkcontrol : %.s1.pushedToWorker.mkcontrol
+    echo doing stem $*
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type $*.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do \
+	if not exist $*.s2.enqueuedToWorker.mkcontrol \
+	($(MASTER_LOCK_BAT) acquire $*.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type $*.agent) && $(WAIT5SEC)) \
+	else (exit /b)'
+
+
 # enqueue map jobs:
-FILE001.s2.enqueuedToWorker.mkcontrol : FILE001.s1.pushedToWorker.mkcontrol
+ko_FILE001.s2.enqueuedToWorker.mkcontrol : FILE001.s1.pushedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type FILE001.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE001.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire FILE001.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type FILE001.agent) && $(WAIT5SEC)) else (exit /b)'
-FILE002.s2.enqueuedToWorker.mkcontrol : FILE002.s1.pushedToWorker.mkcontrol
+ko_FILE002.s2.enqueuedToWorker.mkcontrol : FILE002.s1.pushedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type FILE002.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE002.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire FILE002.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type FILE002.agent) && $(WAIT5SEC)) else (exit /b)'
-FILE003.s2.enqueuedToWorker.mkcontrol : FILE003.s1.pushedToWorker.mkcontrol
+ko_FILE003.s2.enqueuedToWorker.mkcontrol : FILE003.s1.pushedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type FILE003.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE003.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire FILE003.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type FILE003.agent) && $(WAIT5SEC)) else (exit /b)'
-FILE004.s2.enqueuedToWorker.mkcontrol : FILE004.s1.pushedToWorker.mkcontrol
+ko_FILE004.s2.enqueuedToWorker.mkcontrol : FILE004.s1.pushedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type FILE004.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE004.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire FILE004.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type FILE004.agent) && $(WAIT5SEC)) else (exit /b)'
-FILE005.s2.enqueuedToWorker.mkcontrol : FILE005.s1.pushedToWorker.mkcontrol
+ko_FILE005.s2.enqueuedToWorker.mkcontrol : FILE005.s1.pushedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type FILE005.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE005.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire FILE005.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type FILE005.agent) && $(WAIT5SEC)) else (exit /b)'
 
+
 # submit map jobs:
-FILE001.s3.submittedToWorker.mkcontrol : FILE001.s2.enqueuedToWorker.mkcontrol
+%.s3.submittedToWorker.mkcontrol : %.s2.enqueuedToWorker.mkcontrol
+    echo doing stem $*
+	cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type $*.agent) $($*) $* && echo> $@'
+
+ko_FILE001.s3.submittedToWorker.mkcontrol : FILE001.s2.enqueuedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type FILE001.agent) $(FILE001) FILE001 && echo> $@'
-FILE002.s3.submittedToWorker.mkcontrol : FILE002.s2.enqueuedToWorker.mkcontrol
+ko_FILE002.s3.submittedToWorker.mkcontrol : FILE002.s2.enqueuedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type FILE002.agent) $(FILE002) FILE002 && echo> $@'
-FILE003.s3.submittedToWorker.mkcontrol : FILE003.s2.enqueuedToWorker.mkcontrol
+ko_FILE003.s3.submittedToWorker.mkcontrol : FILE003.s2.enqueuedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type FILE003.agent) $(FILE003) FILE003 && echo> $@'
-FILE004.s3.submittedToWorker.mkcontrol : FILE004.s2.enqueuedToWorker.mkcontrol
+ko_FILE004.s3.submittedToWorker.mkcontrol : FILE004.s2.enqueuedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type FILE004.agent) $(FILE004) FILE004 && echo> $@'
-FILE005.s3.submittedToWorker.mkcontrol : FILE005.s2.enqueuedToWorker.mkcontrol
+ko_FILE005.s3.submittedToWorker.mkcontrol : FILE005.s2.enqueuedToWorker.mkcontrol
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type FILE005.agent) $(FILE005) FILE005 && echo> $@'
 
 # poll file steps:
-FILE001.s4.workerCompletionChecked.mkcontrol : FILE001.s3.submittedToWorker.mkcontrol
+%.s4.workerCompletionChecked.mkcontrol : %.s3.submittedToWorker.mkcontrol
+	echo doing stem $*
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist $*.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type $*.agent).busy.agent $(shell cmd /c type $*.agent).idle.agent && exit /b)'
+
+ko_FILE001.s4.workerCompletionChecked.mkcontrol : FILE001.s3.submittedToWorker.mkcontrol
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE001.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type FILE001.agent).busy.agent $(shell cmd /c type FILE001.agent).idle.agent && exit /b)'
-FILE002.s4.workerCompletionChecked.mkcontrol : FILE002.s3.submittedToWorker.mkcontrol
+ko_FILE002.s4.workerCompletionChecked.mkcontrol : FILE002.s3.submittedToWorker.mkcontrol
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE002.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type FILE002.agent).busy.agent $(shell cmd /c type FILE002.agent).idle.agent && exit /b)'
-FILE003.s4.workerCompletionChecked.mkcontrol : FILE003.s3.submittedToWorker.mkcontrol
+ko_FILE003.s4.workerCompletionChecked.mkcontrol : FILE003.s3.submittedToWorker.mkcontrol
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE003.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type FILE003.agent).busy.agent $(shell cmd /c type FILE003.agent).idle.agent && exit /b)'
-FILE004.s4.workerCompletionChecked.mkcontrol : FILE004.s3.submittedToWorker.mkcontrol
+ko_FILE004.s4.workerCompletionChecked.mkcontrol : FILE004.s3.submittedToWorker.mkcontrol
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE004.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type FILE004.agent).busy.agent $(shell cmd /c type FILE004.agent).idle.agent && exit /b)'
-FILE005.s4.workerCompletionChecked.mkcontrol : FILE005.s3.submittedToWorker.mkcontrol
+ko_FILE005.s4.workerCompletionChecked.mkcontrol : FILE005.s3.submittedToWorker.mkcontrol
     @cmd /c 'for /L %s in (0,5,36000) do if not exist FILE005.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type FILE005.agent).busy.agent $(shell cmd /c type FILE005.agent).idle.agent && exit /b)'
+
 
 #pull steps:
 $(FILE001).out.csv : FILE001.s4.workerCompletionChecked.mkcontrol
@@ -191,8 +227,6 @@ $(FINALFILE) : $(FILE001).out.csv $(FILE002).out.csv $(FILE003).out.csv $(FILE00
 
 ###
 
-MASTER_WORKDIR=MASTER\WORKDIR
-WORKER_WORKDIR=WORKER\WORKDIR
 MASTER_REXEC_BAT=MASTER-TEMP.REMOTEEXEC.BAT
 WORKER_LEXEC_BAT=WORKER-TEMP.LOCALEXEC.BAT
 MASTER_LOGGER_BAT=MASTER-LOGGER.BAT
@@ -200,10 +234,6 @@ MASTER_LOCK_BAT=MASTER-LOCK.BAT
 MASTER_LOG=make-log.log
 
 
-MASTER_NET_ABS_TEMPBAT_LOC=\\$(HEADH)\$(MASTER_WORKDIR)
-PYCALL_AT_WORKER=c:\Python37-32\python.exe \\$(HEADH)\$(MASTER_WORKDIR)\task.py
-WAIT5SEC=C:\Windows\System32\timeout.exe /T 5
-WAIT5SEC=C:\Windows\System32\ping.exe 127.0.0.1 -n 5
 
 ###
 
@@ -249,7 +279,7 @@ gen_loc_exec:
 gen_rem_exec:
     # install - MASTER_REXEC_BAT
     echo 'rem I am expected to be the head node' > $(MASTER_REXEC_BAT)
-    echo 'PsExec \\%1 -accepteula -s -d $(MASTER_NET_ABS_TEMPBAT_LOC)\$(WORKER_LEXEC_BAT) %1 %2 %3' >> $(MASTER_REXEC_BAT)
+    echo '$(PSEXEC)  \\%1 -accepteula -s -d $(MASTER_NET_ABS_TEMPBAT_LOC)\$(WORKER_LEXEC_BAT) %1 %2 %3' >> $(MASTER_REXEC_BAT)
     # the below cd is required to override the (false) error code returned by PsEcex when used with the -d switch
     echo cd >> $(MASTER_REXEC_BAT)
 
