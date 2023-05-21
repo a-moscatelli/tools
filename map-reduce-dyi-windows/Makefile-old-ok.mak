@@ -105,44 +105,111 @@ clean_agents_to_files_assignments:
 
 
 #push steps:
-#... all rerunnable
 
-%.s1.inputFilePushedToWorker.mkcontrol : %.s0.inputFileReadyOnMaster.mkcontrol
+
+%.s1.pushedToWorker.mkcontrol : %.s0.inputFileReadyOnMaster.mkcontrol
 	echo doing stem $*
     cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c 'copy $? \\$(shell cmd /c type $*.agent)\$(WORKER_WORKDIR)\ && echo> $@'
 
+ko_TASK001.s1.pushedToWorker.mkcontrol : $(TASK001)
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c 'copy $? \\$(shell cmd /c type TASK001.agent)\$(WORKER_WORKDIR)\ && echo> $@'
+ko_TASK002.s1.pushedToWorker.mkcontrol : $(TASK002)
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c 'copy $? \\$(shell cmd /c type TASK002.agent)\$(WORKER_WORKDIR)\ && echo> $@'
+ko_TASK003.s1.pushedToWorker.mkcontrol : $(TASK003)
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c 'copy $? \\$(shell cmd /c type TASK003.agent)\$(WORKER_WORKDIR)\ && echo> $@'
+ko_TASK004.s1.pushedToWorker.mkcontrol : $(TASK004)
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c 'copy $? \\$(shell cmd /c type TASK004.agent)\$(WORKER_WORKDIR)\ && echo> $@'
+ko_TASK005.s1.pushedToWorker.mkcontrol : $(TASK005)
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c 'copy $? \\$(shell cmd /c type TASK005.agent)\$(WORKER_WORKDIR)\ && echo> $@'
+#... all rerunnable
+
+
+
+
 # semantic of files:
 # TASK001.lock = the TASK001 step was able to acquire a lock and move its agent status from idle to busy in MUTEX zone
 
-# enqueue map jobs:
-%.s2.workerAcquisitionLoopFinished.mkcontrol : %.s1.inputFilePushedToWorker.mkcontrol
+
+%.s2.enqueuedToWorker.mkcontrol : %.s1.pushedToWorker.mkcontrol
     echo doing stem $*
     cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type $*.agent)'
     @cmd /c 'for /L %s in (0,5,36000) do \
-	if not exist $*.s2.workerAcquisitionLoopFinished.mkcontrol \
-	($(MASTER_LOCK_BAT) acquire $*.s2.workerAcquisitionLoopFinished.mkcontrol $(shell cmd /c type $*.agent) && $(WAIT5SEC)) \
-	else \
-	(exit /b)'
+	if not exist $*.s2.enqueuedToWorker.mkcontrol \
+	($(MASTER_LOCK_BAT) acquire $*.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type $*.agent) && $(WAIT5SEC)) \
+	else (exit /b)'
+
+
+# enqueue map jobs:
+ko_FILE001.s2.enqueuedToWorker.mkcontrol : TASK001.s1.pushedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type TASK001.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK001.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire TASK001.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type TASK001.agent) && $(WAIT5SEC)) else (exit /b)'
+ko_FILE002.s2.enqueuedToWorker.mkcontrol : TASK002.s1.pushedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type TASK002.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK002.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire TASK002.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type TASK002.agent) && $(WAIT5SEC)) else (exit /b)'
+ko_FILE003.s2.enqueuedToWorker.mkcontrol : TASK003.s1.pushedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type TASK003.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK003.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire TASK003.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type TASK003.agent) && $(WAIT5SEC)) else (exit /b)'
+ko_FILE004.s2.enqueuedToWorker.mkcontrol : TASK004.s1.pushedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type TASK004.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK004.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire TASK004.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type TASK004.agent) && $(WAIT5SEC)) else (exit /b)'
+ko_FILE005.s2.enqueuedToWorker.mkcontrol : TASK005.s1.pushedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@ $(shell cmd /c type TASK005.agent)'
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK005.s2.enqueuedToWorker.mkcontrol ($(MASTER_LOCK_BAT) acquire TASK005.s2.enqueuedToWorker.mkcontrol $(shell cmd /c type TASK005.agent) && $(WAIT5SEC)) else (exit /b)'
+
 
 # submit map jobs:
-%.s3.submittedToWorker.mkcontrol : %.s2.workerAcquisitionLoopFinished.mkcontrol
+%.s3.submittedToWorker.mkcontrol : %.s2.enqueuedToWorker.mkcontrol
     echo doing stem $*
 	cmd /c '$(MASTER_LOGGER_BAT) begin $@'
     cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type $*.agent) $($*) $* && echo> $@'
 
+ko_FILE001.s3.submittedToWorker.mkcontrol : TASK001.s2.enqueuedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type TASK001.agent) $(TASK001) TASK001 && echo> $@'
+ko_FILE002.s3.submittedToWorker.mkcontrol : TASK002.s2.enqueuedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type TASK002.agent) $(TASK002) TASK002 && echo> $@'
+ko_FILE003.s3.submittedToWorker.mkcontrol : TASK003.s2.enqueuedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type TASK003.agent) $(TASK003) TASK003 && echo> $@'
+ko_FILE004.s3.submittedToWorker.mkcontrol : TASK004.s2.enqueuedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type TASK004.agent) $(TASK004) TASK004 && echo> $@'
+ko_FILE005.s3.submittedToWorker.mkcontrol : TASK005.s2.enqueuedToWorker.mkcontrol
+    cmd /c '$(MASTER_LOGGER_BAT) begin $@'
+    cmd /c '$(MASTER_REXEC_BAT) $(shell cmd /c type TASK005.agent) $(TASK005) TASK005 && echo> $@'
+
 # poll file steps:
-%.s4.workerCompletionCheckLoopFinished.mkcontrol : %.s3.submittedToWorker.mkcontrol
+%.s4.workerCompletionChecked.mkcontrol : %.s3.submittedToWorker.mkcontrol
 	echo doing stem $*
-    @cmd /c 'for /L %s in (0,5,36000) do \
-	if not exist $*.workercompleted.mkcontrol \
-	($(WAIT5SEC)) \
-	else \
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist $*.workercompleted.mkcontrol ($(WAIT5SEC)) else \
     (echo> $@ && ren $(shell cmd /c type $*.agent).busy.agent $(shell cmd /c type $*.agent).idle.agent && exit /b)'
-#TBC call MASTER_LOCK_BAT release
+
+ko_FILE001.s4.workerCompletionChecked.mkcontrol : TASK001.s3.submittedToWorker.mkcontrol
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK001.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type TASK001.agent).busy.agent $(shell cmd /c type TASK001.agent).idle.agent && exit /b)'
+ko_FILE002.s4.workerCompletionChecked.mkcontrol : TASK002.s3.submittedToWorker.mkcontrol
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK002.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type TASK002.agent).busy.agent $(shell cmd /c type TASK002.agent).idle.agent && exit /b)'
+ko_FILE003.s4.workerCompletionChecked.mkcontrol : TASK003.s3.submittedToWorker.mkcontrol
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK003.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type TASK003.agent).busy.agent $(shell cmd /c type TASK003.agent).idle.agent && exit /b)'
+ko_FILE004.s4.workerCompletionChecked.mkcontrol : TASK004.s3.submittedToWorker.mkcontrol
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK004.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type TASK004.agent).busy.agent $(shell cmd /c type TASK004.agent).idle.agent && exit /b)'
+ko_FILE005.s4.workerCompletionChecked.mkcontrol : TASK005.s3.submittedToWorker.mkcontrol
+    @cmd /c 'for /L %s in (0,5,36000) do if not exist TASK005.workercompleted.mkcontrol ($(WAIT5SEC)) else \
+    (echo> $@ && ren $(shell cmd /c type TASK005.agent).busy.agent $(shell cmd /c type TASK005.agent).idle.agent && exit /b)'
+
 
 #pull steps:
-%.s5.outputFilePulledToMaster.mkcontrol : %.s4.workerCompletionCheckLoopFinished.mkcontrol
+%.s5.outputFileReadyOnMaster.mkcontrol : %.s4.workerCompletionChecked.mkcontrol
  	echo doing stem $*
 #	cmd /c 'ren $(shell cmd /c type TASK001.agent).busy.agent $(shell cmd /c type TASK001.agent).idle.agent'
     cmd /c 'copy \\$(shell cmd /c type $*.agent)\$(WORKER_WORKDIR)\$($*).out.csv  .'
@@ -150,11 +217,32 @@ clean_agents_to_files_assignments:
     cmd /c '$(MASTER_LOGGER_BAT) end $<'
 
 
+ko_$(TASK001).out.csv : TASK001.s4.workerCompletionChecked.mkcontrol
+    #cmd /c 'ren $(shell cmd /c type TASK001.agent).busy.agent $(shell cmd /c type TASK001.agent).idle.agent'
+    cmd /c 'copy \\$(shell cmd /c type TASK001.agent)\$(WORKER_WORKDIR)\$(TASK001).out.csv $@'
+    cmd /c '$(MASTER_LOGGER_BAT) end $<'
+ko_$(TASK002).out.csv : TASK002.s4.workerCompletionChecked.mkcontrol
+    #cmd /c 'ren $(shell cmd /c type TASK002.agent).busy.agent $(shell cmd /c type TASK002.agent).idle.agent'
+    cmd /c 'copy \\$(shell cmd /c type TASK002.agent)\$(WORKER_WORKDIR)\$(TASK002).out.csv $@'
+    cmd /c '$(MASTER_LOGGER_BAT) end $<'
+ko_$(TASK003).out.csv : TASK003.s4.workerCompletionChecked.mkcontrol
+    #cmd /c 'ren $(shell cmd /c type TASK003.agent).busy.agent $(shell cmd /c type TASK003.agent).idle.agent'
+    cmd /c 'copy \\$(shell cmd /c type TASK003.agent)\$(WORKER_WORKDIR)\$(TASK003).out.csv $@'
+    cmd /c '$(MASTER_LOGGER_BAT) end $<'
+ko_$(TASK004).out.csv : TASK004.s4.workerCompletionChecked.mkcontrol
+    #cmd /c 'ren $(shell cmd /c type TASK004.agent).busy.agent $(shell cmd /c type TASK004.agent).idle.agent'
+    cmd /c 'copy \\$(shell cmd /c type TASK004.agent)\$(WORKER_WORKDIR)\$(TASK004).out.csv $@'
+    cmd /c '$(MASTER_LOGGER_BAT) end $<'
+ko_$(TASK005).out.csv : TASK005.s4.workerCompletionChecked.mkcontrol
+    #cmd /c 'ren $(shell cmd /c type TASK005.agent).busy.agent $(shell cmd /c type TASK005.agent).idle.agent'
+    cmd /c 'copy \\$(shell cmd /c type TASK005.agent)\$(WORKER_WORKDIR)\$(TASK005).out.csv $@'
+    cmd /c '$(MASTER_LOGGER_BAT) end $<'
+
 #reduce:
-#TBC
+
 $(FINALFILE) : $(TASK001).out.csv $(TASK002).out.csv $(TASK003).out.csv $(TASK004).out.csv $(TASK005).out.csv
     $(MASTER_LOGGER_BAT) begin reduce
-    cmd /c 'type $^ > $(FINALFILE)'
+    cmd /c 'type $? > $(FINALFILE)'
     $(MASTER_LOGGER_BAT) end reduce
     cmd /c 'dir *.out.csv'
     @echo DONE!
@@ -172,7 +260,6 @@ MASTER_LOG=make-log.log
 ###
 
 install: gen_loc_exec gen_rem_exec gen_logger delete_log gen_lock
-# NB will likely be done in parallel
 
 gen_lock:
     echo 'ren %3.idle.agent %3.busy.agent' > $(MASTER_LOCK_BAT)
@@ -200,8 +287,10 @@ gen_logger:
 delete_log:
     cmd /c 'del /Q $(MASTER_LOG)'
 
+
+
 gen_loc_exec:
-#	install - WORKER_LEXEC_BAT
+    # install - WORKER_LEXEC_BAT
     echo 'rem I am expected to be a worker' > $(WORKER_LEXEC_BAT)
     echo 'SET MYHOSTNAME=%1' >> $(WORKER_LEXEC_BAT)
     echo 'SET FILENM=%2' >> $(WORKER_LEXEC_BAT)
@@ -210,19 +299,18 @@ gen_loc_exec:
     echo 'echo> \\$(HEADH)\$(MASTER_WORKDIR)\%FILECTR%.workercompleted.mkcontrol' >> $(WORKER_LEXEC_BAT)
 
 gen_rem_exec:
-#	install - MASTER_REXEC_BAT
+    # install - MASTER_REXEC_BAT
     echo 'rem I am expected to be the head node' > $(MASTER_REXEC_BAT)
     echo '$(PSEXEC)  \\%1 -accepteula -s -d $(MASTER_NET_ABS_TEMPBAT_LOC)\$(WORKER_LEXEC_BAT) %1 %2 %3' >> $(MASTER_REXEC_BAT)
+    # the below cd is required to override the (false) error code returned by PsEcex when used with the -d switch
     echo cd >> $(MASTER_REXEC_BAT)
-#	the below cd is required to override the (false) error code returned by PsEcex when used with the -d switch
-#TBC use -
 
 ###
 
 clean: clean_mkcontrol rem_in_clean rem_out_clean loc_out_clean
 
 clean_mkcontrol:
-#	rerunnable
+    #rerunnable
     @echo === cleaning the .mkcontrol files
     cmd /c 'del /Q *.mkcontrol'
     cmd /c 'del /Q *.lock'
@@ -230,7 +318,7 @@ clean_mkcontrol:
 
 
 rem_in_clean:
-#	rerunnable
+    #rerunnable
     @echo === cleaning remote input files according to the .agent specs
     cmd /c 'del /Q \\$(shell cmd /c type TASK001.agent)\$(WORKER_WORKDIR)\$(TASK001)'
     cmd /c 'del /Q \\$(shell cmd /c type TASK002.agent)\$(WORKER_WORKDIR)\$(TASK002)'
@@ -240,7 +328,7 @@ rem_in_clean:
     @echo === done
 
 rem_out_clean:
-#	rerunnable
+    #rerunnable
     @echo === cleaning remote output files according to the .agent specs
     cmd /c 'del /Q \\$(shell cmd /c type TASK001.agent)\$(WORKER_WORKDIR)\$(TASK001).out.csv'
     cmd /c 'del /Q \\$(shell cmd /c type TASK002.agent)\$(WORKER_WORKDIR)\$(TASK002).out.csv'
@@ -250,7 +338,7 @@ rem_out_clean:
     @echo === supposed to be done
 
 loc_out_clean:
-#	rerunnable
+    #rerunnable
     @echo === cleaning local copies of the output files and the reduce output file
     cmd /c 'del /Q $(TASK001).out.csv'
     cmd /c 'del /Q $(TASK002).out.csv'
@@ -264,11 +352,10 @@ loc_out_clean:
 ### foreach worker
 
 util_rem_dir:
-#	rerunnable
+    #rerunnable
     cmd /c 'dir \\$(HOST001)\$(WORKER_WORKDIR) || cd'
     cmd /c 'dir \\$(HOST002)\$(WORKER_WORKDIR) || cd'
     cmd /c 'dir \\$(HOST003)\$(WORKER_WORKDIR) || cd'
-#TBC use -
 
 ###
 
