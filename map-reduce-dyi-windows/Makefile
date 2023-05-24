@@ -1,5 +1,12 @@
 # Makefile
-# see help:
+# setenv.bat  - you now have *.worker and *.taskfiles
+# make i    - you now have MASTER-LOCK.BAT MASTER-LOGGER.BAT MASTER-TEMP.REMOTEEXEC.BAT WORKER-TEMP.LOCALEXEC.BAT
+# make a  (will remove busy agents)
+# make -j 1 all
+
+
+
+# see help
 
 # expected initial content of folder MASTER_WORKDIR on node HEADH:
 # -
@@ -14,19 +21,21 @@
 #set "MASTER_WORKDIR=folder\subfolder\subsubfolder"
 #set "WORKER_WORKDIR=folder"
 
+# see https://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
+# A variable name may be any sequence of characters not containing `:', `#', `=', or leading or trailing whitespace
 
 ############  ENVIRONMENT SPECIFIC VALUES  - BEGIN
 
 # HEADH = working workstation and head node
 
 # remote workers labels: we assume one job per file per worker
-WORKERS=HOST001 HOST002 HOST003
+#WORKERS=HOST001 HOST002 HOST003
 
 # map tasks labels and files to process:
-TASKS=TASK001 TASK002 TASK003 TASK004 TASK005
+#TASKS=TASK001 TASK002 TASK003 TASK004 TASK005
 
 # output file of the reduce step:
-FINALFILE=merged.out.csv
+#FINALFILE=merged.out.csv
 #
 MASTER_NET_ABS_TEMPBAT_LOC=\\$(HEADH)\$(MASTER_WORKDIR)
 PYCALL_AT_WORKER=c:\Python37-32\python.exe \\$(HEADH)\$(MASTER_WORKDIR)\task.py
@@ -70,29 +79,28 @@ ci:uninstall
 
 all : map_reduce
 
-
 map_reduce: $(FINALFILE)
-#  echo map_reduce is up-to-date!
 
 
-foreach.WX.util_test_rexec = $(foreach WX, $(WORKERS), $(WX).foreach.WX.util_test_rexec)
-util_test_rexec: $(foreach.WX.util_test_rexec)
-$(foreach.WX.util_test_rexec):
-	@echo doing HOST $(patsubst %.foreach.WX.util_test_rexec,%,$@) = $($(patsubst %.foreach.WX.util_test_rexec,%,$@))
-	@echo doing:
-	@echo '$(PSEXEC) \\$($(patsubst %.foreach.WX.util_test_rexec,%,$@)) -accepteula -s cmd /c cd'
-	@cmd /c '$(PSEXEC)  \\$($(patsubst %.foreach.WX.util_test_rexec,%,$@)) -accepteula -s cmd /c cd'
+phonytargets.workers.util_test_rexec = $(foreach WX, $(WORKERS), $(WX).phonytargets.workers.util_test_rexec)
+util_test_rexec: $(phonytargets.workers.util_test_rexec)
+$(phonytargets.workers.util_test_rexec):
+	@echo doing HOST KEY $(patsubst %.phonytargets.workers.util_test_rexec,%,$@) VALUE $(call getWorkerValueOfWorkerKey,$(patsubst %.phonytargets.workers.util_test_rexec,%,$@))
+	cmd /c '$(PSEXEC) \\$(call getWorkerValueOfWorkerKey,$(patsubst %.phonytargets.workers.util_test_rexec,%,$@)) -accepteula -s cmd /c cd'
+
+
 
 
 initialize: step0_task_init worker_state_init
-	#rerunnable
-	-cmd /c 'del /Q *.busy.agent'
+#rerunnable
+	@echo initialize : main
 	-cmd /c 'del /Q $(MASTER_LOG)'
-	$(MASTER_LOGGER_BAT) EXEC_ initialize
+	$(MASTER_LOGGER_BAT) END__ initialize
 
 
 
 clean_initialization:
+	@echo clean_initialization starts
 	cmd /c 'del /Q *.agent'
 	cmd /c 'del /Q *.mkcontrol'
 	-cmd /c 'del /Q $(MASTER_LOG)'
@@ -103,10 +111,36 @@ clean_initialization:
 #echo test - the agent of TASK001 will be: $(file < TASK001.agent) -NOT OK-
 #... file function is supported since v 4.2 and we are using GNU Make version 3.78.1 - Built for Windows32
 
-foreach.WX.worker_state_init = $(foreach WX, $(WORKERS), $(WX).idle.agent)
-worker_state_init: $(foreach.WX.worker_state_init)
-$(foreach.WX.worker_state_init) :
+phonytargets.workers.worker_state_init = $(foreach WX, $(WORKERS), $(WX).idle.agent)
+worker_state_init: $(phonytargets.workers.worker_state_init)
+$(phonytargets.workers.worker_state_init) :
+	@echo initialize : worker_state_init
 	cmd /c 'echo>$@'
+	-cmd /c 'del /Q *.busy.agent'
+#  cmd /c 'type $@'
+
+
+# https://www.gnu.org/software/make/manual/html_node/Call-Function.html
+# reverse = $(2) $(1)
+# foo = $(call reverse,a,b)
+
+getTaskKey = $(1)
+# ... semantic
+getWorkerKeyOfTaskKey    = $(strip $(shell cmd /c type $(1).agent))
+getWorkerValueOfWorkerKey  = $(strip $(shell cmd /c type $(1).worker))
+getWorkerValueOfTaskKey    = $(call getWorkerValueOfWorkerKey,$(call getWorkerKeyOfTaskKey,$(1)))
+# do not add extra spaces between call and arg
+getTaskValueOfTaskKey    = $(strip $(shell cmd /c type $(1).taskfiles))
+getTaskValueOfTaskKeyOut  = $(strip $(shell cmd /c type $(1).taskfiles)).out.csv
+
+
+testMacros:
+	@echo 1 getTaskKey [$(call getTaskKey,TASK001)]
+	@echo 2 getWorkerKeyOfTaskKey [$(call getWorkerKeyOfTaskKey,TASK001)]
+	@echo 3 getWorkerValueOfWorkerKey [$(call getWorkerValueOfWorkerKey,HOST001)]
+	@echo 4 getWorkerValueOfTaskKey [$(call getWorkerValueOfTaskKey,TASK001)]
+	@echo 5 getTaskValueOfTaskKey [$(call getTaskValueOfTaskKey,TASK001)]
+
 
 #ref. https://www.gnu.org/software/make/manual/html_node/Static-Usage.html
 
@@ -119,20 +153,23 @@ step5_targets = $(foreach TX, $(TASKS), $(TX).step5.outputFilePulledToMaster.mkc
 
 step0_task_init: $(step0_targets)
 $(step0_targets) :
+	@echo initialize : step0_task_init
 	cmd /c 'echo>$@'
+
+
 
 
 # enqueue map jobs:
 # TASKnnn.step1.workerAcquisitionLoopFinished.mkcontrol is created when TASKnnn found and acquired an idle worker exclusively
 $(step1_targets) : %.step1.workerAcquisitionLoopFinished.mkcontrol : %.step0.inputFileReadyOnMaster.mkcontrol
-	echo doing stem $*
+	@echo doing stem $* for step1.workerAcquisitionLoopFinished.mkcontrol
 	cmd /c '$(MASTER_LOGGER_BAT) BEGIN $@'
 	@cmd /c 'for /L %s in (0,5,36000) do \
 	if not exist $@ \
-	($(MASTER_LOCK_BAT) acquire $@ NA $* && $(WAIT5SEC)) \
+	($(MASTER_LOCK_BAT) acquire $@ NA $(call getTaskKey,$*) && $(WAIT5SEC)) \
 	else \
 	(exit /b)'
-	cmd /c '$(MASTER_LOGGER_BAT) END__ $@ $(shell cmd /c type $*.agent)'
+	cmd /c '$(MASTER_LOGGER_BAT) END__ $@ $(call getWorkerKeyOfTaskKey,$*)'
 
 
 #push steps:
@@ -140,35 +177,34 @@ $(step1_targets) : %.step1.workerAcquisitionLoopFinished.mkcontrol : %.step0.inp
 $(step2_targets) : %.step2.inputFilePushedToWorker.mkcontrol : %.step1.workerAcquisitionLoopFinished.mkcontrol
 # L : P : CP
 # each item of the list L follows the pattern P and needs a dependent that has corresponding name CP
-	echo doing stem $*
-	cmd /c '$(MASTER_LOGGER_BAT) BEGIN $@ $(shell cmd /c type $*.agent)'
-	cmd /c 'copy $($*) \\$($(shell cmd /c type $*.agent))\$(WORKER_WORKDIR)\'
+	@echo doing stem $* for step2.inputFilePushedToWorker.mkcontrol
+	cmd /c '$(MASTER_LOGGER_BAT) BEGIN $@ $(call getWorkerKeyOfTaskKey,$*)'
+	cmd /c 'copy $(call getTaskValueOfTaskKey,$*) \\$(call getWorkerValueOfTaskKey,$*)\$(WORKER_WORKDIR)\'
 	echo> $@
 
 
 
 # submit map jobs:
 $(step3_targets) : %.step3.submittedToWorker.mkcontrol : %.step2.inputFilePushedToWorker.mkcontrol
-	echo doing stem $*
-	cmd /c '$(MASTER_LOGGER_BAT) BEGIN $@ $(shell cmd /c type $*.agent)'
-	cmd /c '$(MASTER_REXEC_BAT) $($(shell cmd /c type $*.agent)) $($*) $* && echo> $@'
+	@echo doing stem $* for step3.submittedToWorker.mkcontrol
+	cmd /c '$(MASTER_LOGGER_BAT) BEGIN $@ $(call getWorkerKeyOfTaskKey,$*)'
+	cmd /c '$(MASTER_REXEC_BAT) $(call getWorkerValueOfTaskKey,$*) $(call getTaskValueOfTaskKey,$*) $(call getTaskKey,$*) && echo> $@'
 
 # poll file steps:
 $(step4_targets) : %.step4.workerCompletionCheckLoopFinished.mkcontrol : %.step3.submittedToWorker.mkcontrol
-	echo doing stem $*
+	@echo doing stem $* for step4.workerCompletionCheckLoopFinished.mkcontrol
 	@cmd /c 'for /L %s in (0,5,36000) do \
 	if not exist $*.step4.workerCompletionCheckLoopFinished.mkcontrol \
 	($(WAIT5SEC)) \
 	else \
-	(echo> $@ && $(MASTER_LOCK_BAT) release NA $(shell cmd /c type $*.agent) && exit /b)'
+	(echo> $@ && $(MASTER_LOCK_BAT) release NA $(call getWorkerKeyOfTaskKey,$*) && exit /b)'
 
 #pull steps:
 $(step5_targets) : %.step5.outputFilePulledToMaster.mkcontrol : %.step4.workerCompletionCheckLoopFinished.mkcontrol
-	echo doing stem $*
-#  cmd /c 'ren $(shell cmd /c type TASK001.agent).busy.agent $(shell cmd /c type TASK001.agent).idle.agent'
-	cmd /c 'copy \\$($(shell cmd /c type $*.agent))\$(WORKER_WORKDIR)\$($*).out.csv  .'
-	cmd /c 'echo>$@'
-	cmd /c '$(MASTER_LOGGER_BAT) END__ $< $(shell cmd /c type $*.agent)'
+	@echo doing stem $* for step5.outputFilePulledToMaster.mkcontrol
+	cmd /c 'copy \\$(call getWorkerValueOfTaskKey,$*)\$(WORKER_WORKDIR)\$(call getTaskValueOfTaskKeyOut,$*)  .'
+	cmd /c 'echo> $@'
+	cmd /c '$(MASTER_LOGGER_BAT) END__ $< $(call getWorkerKeyOfTaskKey,$*)'
 
 
 #reduce:
@@ -181,12 +217,13 @@ $(step5_targets) : %.step5.outputFilePulledToMaster.mkcontrol : %.step4.workerCo
 #TASKS=TASK001 TASK002 TASK003 TASK004 TASK005
 #$(FINALFILE) : $(TASK001).out.csv $(TASK002).out.csv $(TASK003).out.csv $(TASK004).out.csv $(TASK005).out.csv
 
-tasks_output_files = $(foreach TX, $(TASKS), $($(TX)).out.csv)
+output_files_from_map_tasks = $(foreach TX, $(TASKS), $(call getTaskValueOfTaskKeyOut,$(TX)))
 
 $(FINALFILE) : $(step5_targets)
 	$(MASTER_LOGGER_BAT) BEGIN reduce
-	cmd /c 'type $(tasks_output_files) > $(FINALFILE)'
+	cmd /c 'type $(output_files_from_map_tasks) > $(FINALFILE)'
 	$(MASTER_LOGGER_BAT) END__ reduce
+	@echo output:
 	cmd /c 'dir *.out.csv'
 	@echo DONE!
 
@@ -206,6 +243,7 @@ install: gen_loc_exec gen_rem_exec gen_logger gen_lock env_check
 # NB will likely be done in parallel
 
 env_check:
+	@echo HEADH is: $(HEADH)
 	@echo MASTER_WORKDIR is: $(MASTER_WORKDIR)
 	@echo WORKER_WORKDIR is: $(WORKER_WORKDIR)
 
@@ -236,19 +274,22 @@ gen_lock:
 
 
 uninstall:
+	@echo uninstall starts
 	cmd /c 'del /Q $(MASTER_REXEC_BAT) $(MASTER_LOGGER_BAT) $(MASTER_LOCK_BAT) $(WORKER_LEXEC_BAT)'
+	@echo uninstall done
 
 
 ###
 
 gen_logger:
-	echo 'echo %TIME% %1 %2 %3 >> $(MASTER_LOG)' > $(MASTER_LOGGER_BAT)
+	echo '' > $(MASTER_LOGGER_BAT)
+	echo 'echo %TIME% %1 %2 %3 >> $(MASTER_LOG)' >> $(MASTER_LOGGER_BAT)
 
 
 
 gen_loc_exec:
-#  install - WORKER_LEXEC_BAT
-	echo 'rem I am expected to be a worker' > $(WORKER_LEXEC_BAT)
+	echo '' > $(WORKER_LEXEC_BAT)
+	echo 'rem I am expected to be a worker' >> $(WORKER_LEXEC_BAT)
 	echo 'SET MYHOSTNAME=%1' >> $(WORKER_LEXEC_BAT)
 	echo 'SET FILENM=%2' >> $(WORKER_LEXEC_BAT)
 	echo 'SET FILECTR=%3' >> $(WORKER_LEXEC_BAT)
@@ -256,9 +297,10 @@ gen_loc_exec:
 	echo 'echo> \\$(HEADH)\$(MASTER_WORKDIR)\%FILECTR%.step4.workerCompletionCheckLoopFinished.mkcontrol' >> $(WORKER_LEXEC_BAT)
 
 gen_rem_exec:
-#  install - MASTER_REXEC_BAT
-	echo 'rem I am expected to be the head node' > $(MASTER_REXEC_BAT)
-	echo '$(PSEXEC)  \\%1 -accepteula -s -d $(MASTER_NET_ABS_TEMPBAT_LOC)\$(WORKER_LEXEC_BAT) %1 %2 %3' >> $(MASTER_REXEC_BAT)
+	echo '' > $(MASTER_REXEC_BAT)
+	echo 'rem I am expected to be the head node' >> $(MASTER_REXEC_BAT)
+	echo 'set REMOTEHOST=%1' >> $(MASTER_REXEC_BAT)
+	echo '$(PSEXEC)  \\%REMOTEHOST%  -accepteula -s -d $(MASTER_NET_ABS_TEMPBAT_LOC)\$(WORKER_LEXEC_BAT) %1 %2 %3' >> $(MASTER_REXEC_BAT)
 	echo cd >> $(MASTER_REXEC_BAT)
 #  the below cd is required to override the (false) error code returned by PsEcex when used with the -d switch
 #TBC use -
@@ -274,33 +316,36 @@ mkcontrolFilesCleanup:
 	@echo === done
 
 localReduceOutputFilesCleanup:
+	@echo doing ReduceOutputFilesCleanup
 	cmd /c 'del /Q $(FINALFILE)'
 
 
-foreach.TX.remoteInOutFilesCleanup = $(foreach TX, $(TASKS), $(TX).foreach.TX.remoteInOutFilesCleanup)
-remoteInOutFilesCleanup: $(foreach.TX.remoteInOutFilesCleanup)
-$(foreach.TX.remoteInOutFilesCleanup):
-	@echo doing WORKER $(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@) = $($(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@))
-	-cmd /c 'del /Q \\$($(shell cmd /c type $(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@).agent))\$(WORKER_WORKDIR)\$($(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@))'
-	-cmd /c 'del /Q \\$($(shell cmd /c type $(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@).agent))\$(WORKER_WORKDIR)\$($(patsubst %.foreach.TX.remoteInOutFilesCleanup,%,$@)).out.csv'
-
-
-foreach.TX.localOutputFilesCleanup = $(foreach TX, $(TASKS), $(TX).foreach.TX.localOutputFilesCleanup)
-localOutputFilesCleanup: $(foreach.TX.localOutputFilesCleanup)
-$(foreach.TX.localOutputFilesCleanup):
-#      doing WORKER TASK001 = bigfile_real_name.csv
-	@echo doing WORKER $(patsubst %.foreach.TX.localOutputFilesCleanup,%,$@) = $($(patsubst %.foreach.TX.localOutputFilesCleanup,%,$@))
-	-cmd /c 'del /Q $($(patsubst %.foreach.TX.localOutputFilesCleanup,%,$@)).out.csv'
 
 
 
-foreach.WX.util_rem_dir = $(foreach WX, $(WORKERS), $(WX).foreach.WX.util_rem_dir)
-util_rem_dir: $(foreach.WX.util_rem_dir)
-$(foreach.WX.util_rem_dir):
-	@echo doing HOST $(patsubst %.foreach.WX.util_rem_dir,%,$@) = $($(patsubst %.foreach.WX.util_rem_dir,%,$@))
-	-cmd /c 'dir /OD \\$($(patsubst %.foreach.WX.util_rem_dir,%,$@))\$(WORKER_WORKDIR)\'
-	@echo 'that was  \\$($(patsubst %.foreach.WX.util_rem_dir,%,$@))\$(WORKER_WORKDIR)\'
+phonytargets.tasks.remoteInOutFilesCleanup = $(foreach TX, $(TASKS), $(TX).phonytargets.tasks.remoteInOutFilesCleanup)
+remoteInOutFilesCleanup: $(phonytargets.tasks.remoteInOutFilesCleanup)
+$(phonytargets.tasks.remoteInOutFilesCleanup):
+	@echo for remoteInOutFilesCleanup : doing TASK KEY $(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@) VALUE $(call getTaskValueOfTaskKey,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@)) ON WORKER $(call getWorkerValueOfTaskKey,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@))
+	-cmd /c 'del /Q \\$(call getWorkerValueOfTaskKey,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@))\$(WORKER_WORKDIR)\$(call getTaskValueOfTaskKey,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@))'
+	-cmd /c 'del /Q \\$(call getWorkerValueOfTaskKey,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@))\$(WORKER_WORKDIR)\$(call getTaskValueOfTaskKeyOut,$(patsubst %.phonytargets.tasks.remoteInOutFilesCleanup,%,$@))'
 
+
+phonytargets.tasks.localOutputFilesCleanup = $(foreach TX, $(TASKS), $(TX).phonytargets.tasks.localOutputFilesCleanup)
+localOutputFilesCleanup: $(phonytargets.tasks.localOutputFilesCleanup)
+$(phonytargets.tasks.localOutputFilesCleanup):
+	@echo for localOutputFilesCleanup : doing TASK KEY $(patsubst %.phonytargets.tasks.localOutputFilesCleanup,%,$@) VALUE $(call getTaskValueOfTaskKey,$(patsubst %.phonytargets.tasks.localOutputFilesCleanup,%,$@))
+	-cmd /c 'del /Q $(call getTaskValueOfTaskKeyOut,$(patsubst %.phonytargets.tasks.localOutputFilesCleanup,%,$@))'
+
+
+
+phonytargets.workers.util_rem_dir = $(foreach WX, $(WORKERS), $(WX).phonytargets.workers.util_rem_dir)
+util_rem_dir: $(phonytargets.workers.util_rem_dir)
+$(phonytargets.workers.util_rem_dir):
+	@echo doing HOST KEY $(patsubst %.phonytargets.workers.util_rem_dir,%,$@) VALUE $(call getWorkerValueOfWorkerKey,$(patsubst %.phonytargets.workers.util_rem_dir,%,$@))
+	-cmd /c 'dir /OD \\$(call getWorkerValueOfWorkerKey,$(patsubst %.phonytargets.workers.util_rem_dir,%,$@))\$(WORKER_WORKDIR)\'
+	@echo 'that was  \\$(call getWorkerValueOfWorkerKey,$(patsubst %.phonytargets.workers.util_rem_dir,%,$@))\$(WORKER_WORKDIR)\'
+	@echo '--------'
 
 
 
