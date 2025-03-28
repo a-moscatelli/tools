@@ -24,7 +24,7 @@
   * https://www.gnu.org/software/m4/manual/m4.html
 * mustache
   * from https://github.com/cbroglie/mustache/releases
-* proxy pokerface
+* reverse proxy "pokerface"
   * from https://pcafstockf.github.io/PokerFace/index.html
 
 ### Standalone jar files
