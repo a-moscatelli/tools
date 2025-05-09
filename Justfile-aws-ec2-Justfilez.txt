@@ -3,9 +3,14 @@
 # sudo apt just
 
 
-hello:
-  echo "Hello, World!"
+host := `uname -i -o`
 
+
+alias ddown := ddn
+
+
+hello:
+  echo "Hello, World! from a {{host}} host"
 
 # pre-install: run apt update
 install_pre:
