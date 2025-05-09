@@ -37,11 +37,20 @@
         - ddn
         - ddown
         - docker-compose-down
-
+    
     # Task 4: Run docker ps to list running containers
     - name: Run docker ps
       command: docker ps
       tags:
         - dps
-        - docker-processes
----
+        - docker-show-processes
+      register: ps_output
+    
+    - name: Show docker ps output
+      debug:
+        var: ps_output.stdout_lines
+      when: ps_output is defined
+      tags:
+        - dps
+        - docker-show-processes
+
