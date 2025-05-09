@@ -1,0 +1,23 @@
+
+# Justfile - https://github.com/casey/just
+# sudo apt just
+
+
+hello:
+  echo "Hello, World!"
+
+# pre-install: run apt update
+install_pre:
+   sudo apt update
+
+# install the docker engine
+install_docker_docker: install_pre
+   sudo apt install -y docker.io
+
+# install docker-compose
+install_docker_dockercompose: install_docker_docker
+   sudo apt install -y docker-compose
+
+# install docker works - usually the first command I run on a brand new EC2 instance
+install_docker: install_docker_dockercompose 
+
