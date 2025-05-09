@@ -1,0 +1,48 @@
+
+# this is ansible-playbook-z.yml
+
+# alberto moscatelli - May2025
+
+- name: Install Docker and Docker Compose, run docker-compose commands, and view processes
+  hosts: localhost
+  become: true  # Ensure root privileges are used for installation and docker commands
+  
+  tasks:
+    # Task 1: Install Docker and Docker Compose
+    - name: Install Docker and Docker Compose
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+      tags:
+        - dins
+        - docker-install
+    
+    # Task 2: Run docker-compose up -d
+    - name: Run docker-compose up -d
+      command: docker-compose up -d
+      #args:
+      #  chdir: "/path/to/your/docker-compose/directory"  # Specify the directory where the docker-compose.yml file is located
+      tags:
+        - dup
+        - docker-compose-up
+    
+    # Task 3: Run docker-compose down
+    - name: Run docker-compose down
+      command: docker-compose down
+      #args:
+      #  chdir: "/path/to/your/docker-compose/directory"  # Specify the directory where the docker-compose.yml file is located
+      tags:
+        - ddn
+        - ddown
+        - docker-compose-down
+
+    # Task 4: Run docker ps to list running containers
+    - name: Run docker ps
+      command: docker ps
+      tags:
+        - dps
+        - docker-processes
+		
