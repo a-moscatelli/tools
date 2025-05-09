@@ -2,16 +2,19 @@
 # Justfile - https://github.com/casey/just
 # sudo apt just
 
+# Justfile - https://github.com/casey/just
+# sudo apt just
 
-host := `uname -i -o`
+#host := `uname -i -o`
 
 
 alias ddown := ddn
+alias hi := hello
 
 
 hello:
-  echo "Hello, World! from a {{host}} host"
   @echo "This is an {{arch()}} machine".
+#  echo "Hello, World! from a {{host}} host"
 
 
 # pre-install: run apt update
