@@ -6,6 +6,7 @@
 hello:
   echo "Hello, World!"
 
+
 # pre-install: run apt update
 install_pre:
    sudo apt update
@@ -20,4 +21,17 @@ install_docker_dockercompose: install_docker_docker
 
 # install docker works - usually the first command I run on a brand new EC2 instance
 install_docker: install_docker_dockercompose 
+
+
+# start docker-compose
+dup:
+   sudo docker-compose up -d
+
+# show docker containers
+dps:
+   sudo docker ps
+
+# stop docker-compose
+ddn:
+   sudo docker-compose down
 
