@@ -11,6 +11,8 @@ alias ddown := ddn
 
 hello:
   echo "Hello, World! from a {{host}} host"
+  @echo "This is an {{arch()}} machine".
+
 
 # pre-install: run apt update
 install_pre:
