@@ -1,8 +1,13 @@
 
 
-# Justfile - https://github.com/casey/just
+# this is the level-zero Justfile - see https://github.com/casey/just and https://just.systems/man/en/
 # sudo apt update
-# sudo apt just
+# sudo apt install -y just
+# JU=https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
+# curl -o Justfile $JU
+###
+
+
 
 import? 'adhoc.Justfile'
 # ... import but do not fail if not there
