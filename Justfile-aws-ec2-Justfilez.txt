@@ -5,6 +5,9 @@
 # Justfile - https://github.com/casey/just
 # sudo apt just
 
+import? 'adhoc.Justfile'
+# ... import but do not fail if not there
+
 #host := `uname -i -o`
 
 
