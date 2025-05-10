@@ -1,8 +1,7 @@
 
-# Justfile - https://github.com/casey/just
-# sudo apt just
 
 # Justfile - https://github.com/casey/just
+# sudo apt update
 # sudo apt just
 
 import? 'adhoc.Justfile'
