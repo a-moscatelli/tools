@@ -1,5 +1,6 @@
 
-
+# install just and this file:
+#
 # this is the level-zero Justfile - see https://github.com/casey/just and https://just.systems/man/en/
 # sudo apt update
 # sudo apt install -y just
