@@ -56,6 +56,11 @@ dps:
 ddn:
    sudo docker-compose down
 
+# docker ps - exited containers included - then, e.g., docker logs <cont_name>
+dpsa:
+   sudo docker ps -a
+
+
 awscli_mybuckets:
   sudo docker run --rm \
   -v ~/.aws:/root/.aws \
