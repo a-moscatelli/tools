@@ -56,10 +56,12 @@ dps:
 ddn:
    sudo docker-compose down
 
-# docker ps - exited containers included - then, e.g., sudo docker logs (-f) <cont_name>
+# docker ps - exited containers included
 dpsa:
    sudo docker ps -a
-   #echo you could now run: sudo docker logs -f <cont_name>
+
+dlog container_id:
+   sudo docker logs -f {{container_id}}
 
 awsec2_my_public_ip:
    curl http://169.254.169.254/latest/meta-data/public-ipv4
