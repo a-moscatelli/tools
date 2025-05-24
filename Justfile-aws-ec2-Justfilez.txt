@@ -9,7 +9,7 @@
 # to download a copy of this file from github:
 # JU=https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 # curl -o Justfile $JU
-###
+### also see below: just upgrade_myself
 
 
 
@@ -29,6 +29,8 @@ hello:
   @echo "This is an {{arch()}} machine".
 #  echo "Hello, World! from a {{host}} host"
 
+upgrade_myself:
+  curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 
 # pre-install: run apt update
 install_pre:
@@ -80,8 +82,11 @@ awscli args:
     amazon/aws-cli {{args}}
 
 awscli_mybuckets_env argkid argksecr:
-  docker run --rm -it \
+  sudo docker run --rm -it \
     -e AWS_ACCESS_KEY_ID={{argkid}} \
     -e AWS_SECRET_ACCESS_KEY={{argksecr}} \
     -e AWS_DEFAULT_REGION=eu-central-1 \
     amazon/aws-cli s3 ls
+
+enter_a_new_busybox:
+  sudo docker run -it busybox:latest sh
