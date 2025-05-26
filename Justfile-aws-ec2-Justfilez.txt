@@ -56,7 +56,7 @@ dps:
 
 # stop docker-compose
 ddn:
-   sudo docker-compose down
+   sudo docker-compose down --remove-orphans
 
 # docker ps - exited containers included
 dpsa:
