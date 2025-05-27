@@ -32,6 +32,9 @@ hello:
 upgrade_myself:
   curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 
+
+### ### ###
+
 # pre-install: run apt update
 install_pre:
    sudo apt update
@@ -45,6 +48,7 @@ install_docker_dockercompose: install_docker_docker
 # install docker works - usually the first command I run on a brand new EC2 instance
 install_docker: install_docker_dockercompose 
 
+### ### ###
 
 # start docker-compose
 dup:
@@ -64,6 +68,9 @@ dpsa:
 
 dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
+
+### ### ###
+
 
 awsec2_my_public_ip:
    curl http://169.254.169.254/latest/meta-data/public-ipv4
@@ -88,5 +95,14 @@ awscli_mybuckets_env argkid argksecr:
     -e AWS_DEFAULT_REGION=eu-central-1 \
     amazon/aws-cli s3 ls
 
+### ### ###
+
 enter_a_new_busybox:
   sudo docker run -it busybox:latest sh
+
+start_a_busybox_ftpd argport:
+  sudo docker run -d --name busybox-ftpd \
+  -p 21:21 \
+  -v $(pwd)/ftpdata:/home/ftpuser \
+  busybox sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -w /home/ftpuser"
+
