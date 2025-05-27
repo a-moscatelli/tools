@@ -100,7 +100,7 @@ awscli_mybuckets_env argkid argksecr:
 enter_a_new_busybox:
   sudo docker run -it busybox:latest sh
 
-# start ftp server with ANONYMOUS login - make sure the security group of the EC2 includes the specified port
+# start ftp server with ANONYMOUS login - make sure the security group of the EC2 includes the specified port - TBC - needs PASV !
 start_a_busybox_ftpd argport:
   sudo docker run -d --name busybox-ftpd \
   -p {{argport}}:{{argport}} \
@@ -110,3 +110,18 @@ start_a_busybox_ftpd argport:
 stop_a_busybox_container argname_or_id:
   sudo docker container stop {{argname_or_id}}
   sudo docker container rm {{argname_or_id}}
+
+### ### ###
+
+scp_setup_step1_on_activehost:
+  ssh-keygen -t rsa -b 2048
+  cat ~/.ssh/id_rsa.pub
+  echo now copy the generated line to your clipboard - check it's like ubuntu@ip-172-31-37-197
+
+scp_setup_step2_on_passivehost:
+  sudo cat ~/.ssh/authorized_keys
+  echo now paste/append the generated line from your clipboard to file above
+
+scp_setup_step3_on_activehost:
+  echo being eval.a-moscatelli.info (private) = ip-172-31-37-197 (public name) - what is important is the user
+  echo run for example scp adhoc.Justfile ubuntu@eval.a-moscatelli.info:~/camunda_project/adhoc.Justfile
