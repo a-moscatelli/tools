@@ -100,6 +100,7 @@ awscli_mybuckets_env argkid argksecr:
 enter_a_new_busybox:
   sudo docker run -it busybox:latest sh
 
+# start ftp server with anonymous login - make sure the security group of the EC2 includes the specified port
 start_a_busybox_ftpd argport:
   sudo docker run -d --name busybox-ftpd \
   -p {{argport}}:{{argport}} \
