@@ -21,6 +21,8 @@ import? 'adhoc.Justfile'
 
 alias ddown := ddn
 alias hi := hello
+alias ugj := upgrade_myself
+
 
 default:
   just --list
