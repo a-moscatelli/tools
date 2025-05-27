@@ -82,7 +82,7 @@ awscli_mybuckets:
   -v ~/local_aws:/aws \
   amazon/aws-cli s3 ls
 
-# example: just awscli "s3 ls am1misc | grep amwiki
+# example: just awscli "s3 ls am1misc" | grep amwiki
 awscli args: 
   sudo docker run --rm \
     -v ~/.aws:/root/.aws \
