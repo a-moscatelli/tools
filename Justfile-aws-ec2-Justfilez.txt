@@ -28,7 +28,6 @@ default:
 hello:
   @echo "This is an {{arch()}} machine".
   @echo "Justfile path: {{justfile()}}"
-  # echo "Hello, World! from a {{host}} host"
 
 upgrade_myself:
   mv Justfile Justfile.old
