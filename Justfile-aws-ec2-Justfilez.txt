@@ -76,6 +76,7 @@ dlog container_id_or_name:
 awsec2_my_public_ip:
    curl http://169.254.169.254/latest/meta-data/public-ipv4
 
+# main example on how to use this container
 awscli_mybuckets:
   sudo docker run --rm \
   -v ~/.aws:/root/.aws \
