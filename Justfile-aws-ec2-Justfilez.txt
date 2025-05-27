@@ -106,3 +106,6 @@ start_a_busybox_ftpd argport:
   -v $(pwd)/ftpdata:/home/ftpuser \
   busybox sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -w /home/ftpuser"
 
+stop_a_busybox_container argname_or_id:
+  sudo docker container stop {{argname_or_id}}
+  sudo docker container rm {{argname_or_id}}
