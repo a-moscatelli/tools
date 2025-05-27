@@ -29,7 +29,8 @@ default:
 
 hello:
   @echo "This is an {{arch()}} machine".
-#  echo "Hello, World! from a {{host}} host"
+  @echo "Justfile path: {{justfile()}}"
+  # echo "Hello, World! from a {{host}} host"
 
 upgrade_myself:
   curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
