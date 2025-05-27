@@ -102,7 +102,7 @@ enter_a_new_busybox:
 
 start_a_busybox_ftpd argport:
   sudo docker run -d --name busybox-ftpd \
-  -p {{argport}}:21 \
+  -p {{argport}}:{{argport}} \
   -v $(pwd)/ftpdata:/home/ftpuser \
   busybox sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -w /home/ftpuser"
 
