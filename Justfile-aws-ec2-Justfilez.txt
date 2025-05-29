@@ -71,8 +71,11 @@ dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
 
 dhelp:
-    @echo ports - "host:contn" = 80:8080 = the world can access host:80 which will be forwarded to container's port 8080.
-    @echo expose - "80" is nothing more than a reminder, no port is available outside the bridge
+    @echo - docker reminders
+    @echo ports - host:contn = 80:8080 = the world can access host:80 which will be forwarded to containers port 8080.
+    @echo expose - 80 is nothing more than a reminder, no port is available outside the bridge
+    @echo -
+
 ### ### ###
 
 
