@@ -106,9 +106,11 @@ awscli_mybuckets_env argkid argksecr:
 
 ### ### ###
 
+# sudo docker run -it busybox:1.35 sh
 enter_a_new_busybox:
-  sudo docker run -it busybox:latest sh
+  sudo docker run -it busybox:1.35 sh
 
+# sudo docker exec -it {{argcntname}} sh
 enter_a_running_busybox argcntname:
   sudo docker exec -it {{argcntname}} sh
 
