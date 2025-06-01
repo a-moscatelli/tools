@@ -80,6 +80,9 @@ dhelp:
     @echo "sudo docker-compose --profile es --profile my up -d"
     @echo -
 
+used_images:
+    for d in *; do if [ -d $d -a -f $d/docker-compose.yml ]; then echo $d; grep -e "^[ \t]*image:" $d/docker-compose.yml ; fi; done
+
 ### ### ###
 
 
