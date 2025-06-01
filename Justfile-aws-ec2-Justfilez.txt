@@ -30,8 +30,7 @@ hello:
   @echo "Justfile path: {{justfile()}}"
 
 upgrade_myself:
-  mv Justfile Justfile.old
-  curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
+  mv Justfile Justfile.old && curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 
 
 ### ### ###
