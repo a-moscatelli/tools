@@ -88,6 +88,9 @@ declared_images:
 run_awk argscript:
     sudo docker run -v ./awk:/tmpawk busybox:1.36 awk -f /tmpawk/{{argscript}}
 
+run_bcrypt password_to_hash:
+    sudo docker run caddy:2.10 caddy hash-password --plaintext {{password_to_hash}}
+
 ### ### ###
 
 awsec2_my_public_ip:
