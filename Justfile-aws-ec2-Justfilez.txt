@@ -59,6 +59,9 @@ dup:
 dps:
    sudo docker ps
 
+dpsw:
+   sudo watch docker ps
+
 # stop docker-compose
 ddn:
    sudo docker-compose down --remove-orphans
