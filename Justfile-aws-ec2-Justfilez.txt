@@ -83,6 +83,9 @@ dhelp:
 declared_images:
     for d in *; do if [ -d $d -a -f $d/docker-compose.yml ]; then echo $d; grep -e "^[ \t]*image:" $d/docker-compose.yml ; fi; done
 
+recgrep str:
+    find . -type f -exec grep -il "{{str}}" {} \;
+
 ### ### ###
 
 run_awk argscript:
