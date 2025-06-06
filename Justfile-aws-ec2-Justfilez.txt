@@ -131,7 +131,8 @@ enter_a_running_busybox argcntname:
   sudo docker exec -it {{argcntname}} sh
 
 enter_a_running_pg_sqlcli argcntname:
-  sudo docker exec -it {{argcntname}} psql -U metabase -d metabase -c "select now();"
+  sudo docker exec -it {{argcntname}} psql -U $PGUSER -d $PGDATABASE
+# -c "select now();"
 
 ### ### ###
 
