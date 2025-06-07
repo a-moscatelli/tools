@@ -94,7 +94,7 @@ run_awk argscript:
 run_bcrypt password_to_hash:
     sudo docker run caddy:2.10 caddy hash-password --plaintext {{password_to_hash}}
 
-### ### ###
+### ### ### AWS
 
 awsec2_my_public_ip:
    curl http://169.254.169.254/latest/meta-data/public-ipv4
@@ -120,14 +120,14 @@ awscli_mybuckets_env argkid argksecr:
     -e AWS_DEFAULT_REGION=eu-central-1 \
     amazon/aws-cli s3 ls
 
-### ### ###
+### ### ### CONTAINERS / UTILITIES
 
 # sudo docker run -it busybox:1.35 sh
 enter_a_new_busybox:
   sudo docker run -it -v $PWD:/host_pwd busybox:1.35 sh
 
 # sudo docker exec -it {{argcntname}} sh
-enter_a_running_busybox argcntname:
+enter_a_running_container argcntname:
   sudo docker exec -it {{argcntname}} sh
 
 enter_a_running_pg_sqlcli argcntname:
