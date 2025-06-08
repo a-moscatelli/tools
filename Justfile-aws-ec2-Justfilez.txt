@@ -91,6 +91,10 @@ recgrep str:
 recgreptxt str:
     find . -type f -exec grep -H -C 1 -i "{{str}}" {} \; 2>/dev/null
 
+# grep -e with context
+recgrepre str:
+    find . -type f -exec grep -H -C 1 -e "{{str}}" {} \; 2>/dev/null
+
 
 ### ### ###
 
