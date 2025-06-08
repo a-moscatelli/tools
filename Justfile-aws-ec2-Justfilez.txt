@@ -66,6 +66,9 @@ dpsw:
 ddn:
    sudo docker-compose down --remove-orphans
 
+ddu: ddn dup
+
+
 # docker ps - exited containers included
 dpsa:
    sudo docker ps -a
