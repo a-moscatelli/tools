@@ -85,11 +85,11 @@ declared_images:
 
 # grep -il
 recgrep str:
-    find . -type f -exec grep -il "{{str}}" {} \;
+    find . -type f -exec grep -il "{{str}}" {} \; 2>/dev/null
 
 # grep -i with context
 recgreptxt str:
-    find . -type f -exec grep -H -C 1 -i "{{str}}" {} \;
+    find . -type f -exec grep -H -C 1 -i "{{str}}" {} \; 2>/dev/null
 
 
 ### ### ###
