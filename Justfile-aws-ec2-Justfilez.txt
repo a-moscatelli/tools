@@ -137,9 +137,9 @@ awscli_mybuckets_env argkid argksecr:
 
 ### ### ### CONTAINERS / UTILITIES
 
-# sudo docker run -it busybox:1.35 sh
+# sudo docker run -it busybox:1.36 sh
 enter_a_new_busybox:
-  sudo docker run -it -v $PWD:/host_pwd busybox:1.35 sh
+  sudo docker run -it -v $PWD:/host_pwd busybox:1.36 sh
 
 # sudo docker exec -it {{argcntname}} sh
 enter_a_running_container argcntname:
@@ -156,7 +156,7 @@ enter_a_running_pg_sqlcli argcntname:
 #  sudo docker run -d --name busybox-ftpd \
 #  -p {{argport}}:{{argport}} \
 #  -v $(pwd)/ftpdata:/home/ftpuser \
-#  busybox sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
+#  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
 
 stop_a_busybox_container argname_or_id:
   sudo docker container stop {{argname_or_id}}
