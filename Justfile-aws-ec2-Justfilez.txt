@@ -85,18 +85,19 @@ declared_images:
 
 # grep -il
 recgrep str:
-    find . -type f -exec grep -il "{{str}}" {} \; 2>/dev/null
+    sudo find . -type f -exec grep -il "{{str}}" {} \;
 
 # grep -i with context
 recgreptxt str:
-    find . -type f -exec grep -H -C 1 -i "{{str}}" {} \; 2>/dev/null
+    sudo find . -type f -exec grep -H -C 1 -i "{{str}}" {} \;
 
 # grep -e with context
 recgrepre str:
-    find . -type f -exec grep -H -C 1 -e "{{str}}" {} \; 2>/dev/null
+    sudo find . -type f -exec grep -H -C 1 -e "{{str}}" {} \;
 
+# grep -e with context via xargs
 grep_rerex str:
-find . -type f -print0 | xargs -0 grep -H -C 2 "{{str}}"
+    sudo find . -type f -print0 | xargs -0 grep -H -C 2 "{{str}}"
 
 
 
