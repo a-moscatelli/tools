@@ -20,6 +20,7 @@ import? 'adhoc.Justfile'
 alias ddown := ddn
 alias hi := hello
 alias uj := upgrade_myself
+alias dinto := enter_a_running_container
 
 
 default:
