@@ -92,8 +92,8 @@ recgreptxt str:
     sudo find . -type f -exec grep -H -C 1 -i "{{str}}" {} \;
 
 # grep -e with context
-recgrepre str:
-    sudo find . -type f -exec grep -H -C 1 -e "{{str}}" {} \;
+#recgrepre str:
+#    sudo find . -type f -exec grep -H -C 1 -e "{{str}}" {} \;
 
 # grep -e with context via xargs
 grep_rerex str:
