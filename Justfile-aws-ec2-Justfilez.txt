@@ -95,6 +95,10 @@ recgreptxt str:
 recgrepre str:
     find . -type f -exec grep -H -C 1 -e "{{str}}" {} \; 2>/dev/null
 
+grep_rerex str:
+find . -type f -print0 | xargs -0 grep -H -C 2 "{{str}}"
+
+
 
 ### ### ###
 
