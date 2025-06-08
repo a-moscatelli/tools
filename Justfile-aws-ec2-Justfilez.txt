@@ -79,7 +79,7 @@ dhelp:
     @echo 'sudo docker exec -i  postgres_running_container   psql -U metabase -d metabase < pg-user-baserow.sql'
     @echo "sudo docker-compose --profile es --profile my up -d"
     @echo -
-    @echo images - caddy:2.10 - busybox:1.36 - postgres:17.5
+    @echo images - caddy:2.10 - busybox:1.36 - postgres:17.5 - authelia 4.39
 
 
 declared_images:
