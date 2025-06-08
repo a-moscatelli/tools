@@ -1,4 +1,4 @@
-copyright alberto moscatelli 2025
+##### copyright alberto moscatelli 2025 #####
 
 # this is the level-zero Justfile - see https://github.com/casey/just and https://just.systems/man/en/
 
