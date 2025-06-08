@@ -154,8 +154,9 @@ enter_a_running_container argcntname:
   sudo docker exec -it {{argcntname}} sh
 
 enter_a_running_pg_sqlcli argcntname:
-  sudo docker exec -it {{argcntname}} psql -U $PGUSER -d $PGDATABASE
+  sudo docker exec -it {{argcntname}} psql -U $POSTGRES_USER -d $POSTGRES_DB
 # -c "select now();"
+#  sudo docker exec -it {{argcntname}} psql -U $PGUSER -d $PGDATABASE
 
 ### ### ###
 
