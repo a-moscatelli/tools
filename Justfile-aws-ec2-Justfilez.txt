@@ -86,8 +86,10 @@ dhelp:
     @echo images - caddy:2.10 - busybox:1.36 - postgres:17.5 - authelia 4.39
 
 
-declared_images:
-    for d in *; do if [ -d $d -a -f $d/docker-compose.yml ]; then echo $d; grep -e "^[ \t]*image:" $d/docker-compose.yml ; fi; done
+#PPP eg docker-co busybox:
+declared_images filename_prefix image_name_prefix:
+    sudo find . -name "{{filename_prefix}}*" -type f -exec grep -H -e "^[[:space:]]*image:[[:space:]]*{{image_name_prefix}}" {} \;
+
 
 # grep -il
 recgrep str:
