@@ -87,7 +87,7 @@ dhelp:
 
 
 #PPP eg docker-co busybox:
-declared_images filename_prefix image_name_prefix:
+find_declared_images filename_prefix image_name_prefix:
     sudo find . -name "{{filename_prefix}}*" -type f -exec grep -H -e "^[[:space:]]*image:[[:space:]]*{{image_name_prefix}}" {} \;
 
 
