@@ -64,7 +64,7 @@ dpsw:
    sudo watch docker ps
 
 # watch docker stats
-dpsw:
+dstatw:
    sudo watch docker stats
 
 # stop docker-compose
