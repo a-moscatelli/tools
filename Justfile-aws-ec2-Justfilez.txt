@@ -135,14 +135,14 @@ awsec2_my_public_ip:
 
 
 # main example on how to use this container
-awscli_mybuckets:
-  sudo docker run --rm \
-  -v ~/.aws:/root/.aws \
-  -v ~/local_aws:/aws \
-  amazon/aws-cli s3 ls
+#awscli_mybuckets:
+#  sudo docker run --rm \
+#  -v ~/.aws:/root/.aws \
+#  -v ~/local_aws:/aws \
+#  amazon/aws-cli s3 ls
 
 # example: just awscli "s3 ls am1misc" | grep amwiki
-awscli args: 
+awscli_dot args: 
   sudo docker run --rm \
     -v ~/.aws:/root/.aws \
     -v ~/local_aws:/aws \
