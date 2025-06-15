@@ -155,10 +155,11 @@ enter_a_new_busybox:
 enter_a_running_container argcntname:
   sudo docker exec -it {{argcntname}} sh
 
-enter_a_running_pg_sqlcli argcntname:
-  sudo docker exec -it {{argcntname}} psql -U $POSTGRES_USER -d $POSTGRES_DB
+# most common commands: \list \du
+enter_a_running_pg_cli arg_containername:
+  sudo docker exec -it {{arg_containername}} psql -U $POSTGRES_USER -d $POSTGRES_DB
 # -c "select now();"
-#  sudo docker exec -it {{argcntname}} psql -U $PGUSER -d $PGDATABASE
+#  sudo docker exec -it {{arg_containername}} psql -U $PGUSER -d $PGDATABASE
 
 ### ### ###
 
