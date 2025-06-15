@@ -34,7 +34,7 @@ upgrade_myself:
   mv Justfile Justfile.old && curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 
 
-### ### ###
+##### ##### ##### ##### EC2 SETUP ##### #####
 
 # pre-install: run apt update
 install_pre:
@@ -49,7 +49,7 @@ install_docker_dockercompose: install_docker_docker
 # install docker works - usually the first command I run on a brand new EC2 instance
 install_docker: install_docker_dockercompose 
 
-### ### ###
+##### ##### ##### ##### docker-compose ##### #####
 
 # start docker-compose
 dup:
@@ -59,8 +59,13 @@ dup:
 dps:
    sudo docker ps
 
+# watch docker ps
 dpsw:
    sudo watch docker ps
+
+# watch docker stats
+dpsw:
+   sudo watch docker stats
 
 # stop docker-compose
 ddn:
@@ -68,13 +73,18 @@ ddn:
 
 ddu: ddn dup
 
-
 # docker ps - exited containers included
 dpsa:
    sudo docker ps -a
 
+# tail -f container logs
 dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
+
+
+stop_a_busybox_container argname_or_id:
+  sudo docker-compose stop {{argname_or_id}}
+  #sudo docker container rm {{argname_or_id}}
 
 dhelp:
     @echo - docker reminders
@@ -85,33 +95,28 @@ dhelp:
     @echo -
     @echo images - caddy:2.10 - busybox:1.36 - postgres:17.5 - authelia 4.39
 
+##### ##### ##### ##### grep-based ##### #####
 
-#PPP eg docker-co busybox:
-find_declared_images filename_prefix image_name_prefix:
+# config stats: run with eg docker-co busybox:
+scan_declared_images filename_prefix image_name_prefix:
     sudo find . -name "{{filename_prefix}}*" -type f -exec grep -H -e "^[[:space:]]*image:[[:space:]]*{{image_name_prefix}}" {} \;
 
 
 # grep -il
-recgrep str:
+recur_grep_il str:
     sudo find . -type f -exec grep -il "{{str}}" {} \;
 
-# grep -i with context
-recgreptxt str:
-    sudo find . -type f -exec grep -H -C 1 -i "{{str}}" {} \;
-
 # grep -e with context
-#recgrepre str:
-#    sudo find . -type f -exec grep -H -C 1 -e "{{str}}" {} \;
+recur_grep_txt str ctxsize:
+    sudo find . -type f -exec grep -H -C {{str}} -e "{{str}}" {} \;
+
 
 # grep regex with context via xargs - ctx=1 means show the line with a match, +previous +next
 grep_rerex str ctx:
     (find . -type f -print0 | xargs -0 grep -H -C {{ctx}} "{{str}}") 2>/dev/null
 
-generate_authelia_password_hash password:
-  sudo docker run authelia/authelia:4.39 authelia crypto hash generate argon2 --password '{{password}}'
 
-
-### ### ###
+##### ##### ##### ##### utils - text and security ##### #####
 
 run_awk argscript:
     sudo docker run -v ./awk:/tmpawk busybox:1.36 awk -f /tmpawk/{{argscript}}
@@ -119,10 +124,15 @@ run_awk argscript:
 run_bcrypt password_to_hash:
     sudo docker run caddy:2.10 caddy hash-password --plaintext {{password_to_hash}}
 
-### ### ### AWS
+generate_authelia_password_hash password:
+  sudo docker run authelia/authelia:4.39 authelia crypto hash generate argon2 --password '{{password}}'
 
+##### ##### ##### ##### AWS CLI ##### #####
+
+# actually not working...
 awsec2_my_public_ip:
    curl http://169.254.169.254/latest/meta-data/public-ipv4
+
 
 # main example on how to use this container
 awscli_mybuckets:
@@ -138,14 +148,15 @@ awscli args:
     -v ~/local_aws:/aws \
     amazon/aws-cli {{args}}
 
-awscli_mybuckets_env argkid argksecr:
+# with env variables AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+awscli arg_akid arg_sak args:
   sudo docker run --rm -it \
-    -e AWS_ACCESS_KEY_ID={{argkid}} \
-    -e AWS_SECRET_ACCESS_KEY={{argksecr}} \
+    -e AWS_ACCESS_KEY_ID={{arg_akid}} \
+    -e AWS_SECRET_ACCESS_KEY={{arg_sak}} \
     -e AWS_DEFAULT_REGION=eu-central-1 \
-    amazon/aws-cli s3 ls
+    amazon/aws-cli {{args}}
 
-### ### ### CONTAINERS / UTILITIES
+##### ##### ##### ##### CONTAINERS CONNECT ##### #####
 
 # sudo docker run -it busybox:1.36 sh
 enter_a_new_busybox:
@@ -155,26 +166,14 @@ enter_a_new_busybox:
 enter_a_running_container argcntname:
   sudo docker exec -it {{argcntname}} sh
 
-# most common commands: \list \du
+# psql most common commands: \list \du
 enter_a_running_pg_cli arg_containername:
   sudo docker exec -it {{arg_containername}} psql -U postgres -d postgres
 # -c "select now();"
 #  sudo docker exec -it {{arg_containername}} psql -U $PGUSER -d $PGDATABASE
 
-### ### ###
 
-# start ftp server with ANONYMOUS login - make sure the security group of the EC2 includes the specified port - TBC - needs PASV - could not use.
-#start_a_busybox_ftpd argport:
-#  sudo docker run -d --name busybox-ftpd \
-#  -p {{argport}}:{{argport}} \
-#  -v $(pwd)/ftpdata:/home/ftpuser \
-#  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
-
-stop_a_busybox_container argname_or_id:
-  sudo docker container stop {{argname_or_id}}
-  sudo docker container rm {{argname_or_id}}
-
-### ### ###
+##### ##### ##### ##### scp - ftp ##### #####
 
 scp_setup_step1_on_activehost:
   ssh-keygen -t rsa -b 2048
@@ -188,3 +187,10 @@ scp_setup_step2_on_passivehost:
 scp_setup_step3_on_activehost:
   echo being eval.a-moscatelli.info (private) = ip-172-31-37-197 (public name) - what is important is the user
   echo run for example scp adhoc.Justfile ubuntu@eval.a-moscatelli.info:~/camunda_project/adhoc.Justfile
+
+## start ftp server with ANONYMOUS login - make sure the security group of the EC2 includes the specified port - TBC - needs PASV - could not use.
+#start_a_busybox_ftpd argport:
+#  sudo docker run -d --name busybox-ftpd \
+#  -p {{argport}}:{{argport}} \
+#  -v $(pwd)/ftpdata:/home/ftpuser \
+#  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
