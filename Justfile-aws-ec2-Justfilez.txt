@@ -81,7 +81,6 @@ dpsa:
 dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
 
-
 stop_a_busybox_container argname_or_id:
   sudo docker-compose stop {{argname_or_id}}
   #sudo docker container rm {{argname_or_id}}
@@ -108,12 +107,12 @@ recur_grep_il str:
 
 # grep -e with context
 recur_grep_txt str ctxsize:
-    sudo find . -type f -exec grep -H -C {{str}} -e "{{str}}" {} \;
+    sudo find . -type f -exec grep -H -C {{ctxsize}} -e "{{str}}" {} \;
 
 
 # grep regex with context via xargs - ctx=1 means show the line with a match, +previous +next
-grep_rerex str ctx:
-    (find . -type f -print0 | xargs -0 grep -H -C {{ctx}} "{{str}}") 2>/dev/null
+recur_grep_re str ctxsize:
+    (find . -type f -print0 | xargs -0 grep -H -C {{ctxsize}} "{{str}}") 2>/dev/null
 
 
 ##### ##### ##### ##### utils - text and security ##### #####
@@ -126,6 +125,10 @@ run_bcrypt password_to_hash:
 
 generate_authelia_password_hash password:
   sudo docker run authelia/authelia:4.39 authelia crypto hash generate argon2 --password '{{password}}'
+
+pandoc_md2html infile_md outfile_html:
+        docker run --rm -v "$PWD":/data -w /data pandoc/core {{infile_md}} -s -o {{outfile_html}}
+
 
 ##### ##### ##### ##### AWS CLI ##### #####
 
