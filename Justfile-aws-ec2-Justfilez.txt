@@ -127,7 +127,7 @@ generate_authelia_password_hash password:
   sudo docker run authelia/authelia:4.39 authelia crypto hash generate argon2 --password '{{password}}'
 
 pandoc_md2html infile_md outfile_html:
-        docker run --rm -v "$PWD":/data -w /data pandoc/core {{infile_md}} -s -o {{outfile_html}}
+        sudo docker run --rm -v "$PWD":/data -w /data pandoc/core {{infile_md}} -s -o {{outfile_html}}
 
 
 ##### ##### ##### ##### AWS CLI ##### #####
