@@ -91,6 +91,9 @@ ddu: ddn dup
 dpsa:
    sudo docker ps -a
 
+di:
+  sudo docker images
+
 # tail -f container logs
 dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
@@ -212,6 +215,7 @@ scp_setup_step3_on_activehost:
 #  -p {{argport}}:{{argport}} \
 #  -v $(pwd)/ftpdata:/home/ftpuser \
 #  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
+
 
 
 
