@@ -52,6 +52,7 @@ install_docker: install_docker_dockercompose
 ##### ##### ##### ##### git ##### #####
 gpull:
   git pull origin main
+
 gpush:
   git add .
   git commit -m "comment"
@@ -206,5 +207,6 @@ scp_setup_step3_on_activehost:
 #  -p {{argport}}:{{argport}} \
 #  -v $(pwd)/ftpdata:/home/ftpuser \
 #  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
+
 
 
