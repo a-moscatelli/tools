@@ -58,6 +58,11 @@ gpush:
   git commit -m "comment"
   git push origin main
 
+gforcepull:
+  git fetch origin
+  git reset --hard origin/main
+
+
 ##### ##### ##### ##### docker-compose ##### #####
 
 # start docker-compose
@@ -207,6 +212,7 @@ scp_setup_step3_on_activehost:
 #  -p {{argport}}:{{argport}} \
 #  -v $(pwd)/ftpdata:/home/ftpuser \
 #  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
+
 
 
 
