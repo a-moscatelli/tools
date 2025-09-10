@@ -50,6 +50,8 @@ install_docker_dockercompose: install_docker_docker
 install_docker: install_docker_dockercompose 
 
 ##### ##### ##### ##### git ##### #####
+
+#git pull (which does a fetch + merge by default)
 gpull:
   git pull origin main
 
@@ -58,10 +60,11 @@ gpush:
   git commit -m "comment"
   git push origin main
 
+#discard local changes and pull
 gforcepull:
-  git fetch origin
+  #git fetch origin
   git reset --hard origin/main
-
+  git pull origin main
 
 ##### ##### ##### ##### docker-compose ##### #####
 
@@ -215,6 +218,7 @@ scp_setup_step3_on_activehost:
 #  -p {{argport}}:{{argport}} \
 #  -v $(pwd)/ftpdata:/home/ftpuser \
 #  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
+
 
 
 
