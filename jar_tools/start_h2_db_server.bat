@@ -6,6 +6,7 @@ SET JAVA_HOME=%JAVA_HOME%
 echo starting H2SERVER
 
 SET H2JAR=groovy-2.5.6\lib\h2-2.1.214.jar
+SET H2JAR=.\h2-2.1.214.jar
 rem taken from https://mvnrepository.com/artifact/com.h2database/h2/2.1.214
 
 set H2PORT=9092
@@ -14,6 +15,7 @@ rem (default: 9092)
 goto console_access_allowed_from_local_IP
 
 :console_access_allowed_from_local_IP
+echo in the web console: do specify: Generic H2 (Embedded) - jdbc:h2:testdb - will create testdb.mv - no password
 %JAVA_HOME%\bin\java -cp %H2JAR% org.h2.tools.Server -tcp -ifNotExists -tcpPort %H2PORT% -web -baseDir .
 goto theend
  :console_access_allowed_from_any_IP
