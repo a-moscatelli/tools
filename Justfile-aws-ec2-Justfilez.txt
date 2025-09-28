@@ -220,6 +220,13 @@ scp_setup_step3_on_activehost:
 #  busybox:1.36 sh -c "tcpsvd -vE 0.0.0.0 {{argport}} ftpd -A -w /home/ftpuser"
 
 
+# like uuencode
+base64encode fname encfname:
+	cat {{fname}} | gzip | base64 > {{encfname}}
+
+# like uudecode
+base64decode encfname fname:
+	cat {{encfname}} | base64 -d | gunzip > {{fname}}
 
 
 
