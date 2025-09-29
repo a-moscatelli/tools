@@ -75,6 +75,10 @@ gforcepull:
 dup:
    sudo docker-compose up -d
 
+# start docker-compose with a specific profile
+dupp profile:
+   sudo docker-compose --profile {{profile}} up -d
+
 # show docker containers
 dps:
    sudo docker ps
