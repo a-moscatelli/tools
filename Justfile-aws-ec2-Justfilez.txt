@@ -22,14 +22,16 @@ alias hi := hello
 alias uj := upgrade_myself
 alias dinto := enter_a_running_container
 
-
+# just --list
 default:
   just --list
 
+# key env settings
 hello:
   @echo "This is an {{arch()}} machine".
   @echo "Justfile path: {{justfile()}}"
 
+# download Justfile from github
 upgrade_myself:
   mv Justfile Justfile.old && curl -o Justfile https://raw.githubusercontent.com/a-moscatelli/tools/refs/heads/main/Justfile-aws-ec2-Justfilez.txt
 
@@ -55,12 +57,13 @@ install_docker: install_docker_dockercompose
 gpull:
   git pull origin main
 
+#git push from here
 gpush:
   git add .
   git commit -m "comment"
   git push origin main
 
-#discard local changes and pull
+#git: discard local changes and pull
 gforcepull:
   #git fetch origin
   git reset --hard origin/main
@@ -88,12 +91,14 @@ dstatw:
 ddn:
    sudo docker-compose down --remove-orphans
 
+# docker: ddn then dup
 ddu: ddn dup
 
 # docker ps - exited containers included
 dpsa:
    sudo docker ps -a
 
+# docker images
 di:
   sudo docker images
 
@@ -101,9 +106,11 @@ di:
 dlog container_id_or_name:
    sudo docker logs -f {{container_id_or_name}}
 
+
 stop_a_busybox_container argname_or_id:
   sudo docker-compose stop {{argname_or_id}}
   #sudo docker container rm {{argname_or_id}}
+
 
 dhelp:
     @echo - docker reminders
@@ -116,6 +123,7 @@ dhelp:
     @echo busybox nc -zv localhost 5432  ... should reply with st. like open and return 0 
 
 ##### ##### ##### ##### grep-based ##### #####
+
 
 # config stats: run with eg docker-co busybox:
 scan_declared_images filename_prefix image_name_prefix:
