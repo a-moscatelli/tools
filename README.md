@@ -20,7 +20,8 @@
   * make clean
   * based on https://github.com/a-moscatelli/unix4win/blob/main/Makefile
 * m4
-  * m4.exe -E -I . test.m4.txt
+  * m4.exe -E -E -I . test.m4.txt
+  * means: exit with error on the first warning. use "." as include directory. process the given file.
   * https://www.gnu.org/software/m4/manual/m4.html
 * mustache
   * from https://github.com/cbroglie/mustache/releases
